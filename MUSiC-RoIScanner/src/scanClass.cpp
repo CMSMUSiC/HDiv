@@ -4,7 +4,10 @@
 #include <ctime>
 #include <iostream>
 #include <sstream>
+#include <stdexcept>
 #include <string>
+
+#include <fmt/format.h>
 
 #include "Profiler.hpp"
 
@@ -19,20 +22,30 @@ const size_t ERROR_UNHANDLED_EXCEPTION = 2;
 
 } // namespace
 
-int readCommandLineOptions(int argc, char *argv[], std::string &jsonFilePath, std::string &outputDirectory, int &rounds,
-                           int &startRound, std::string &shiftsFilePath, std::string &lutFilePath)
+int readCommandLineOptions(int argc,
+                           char *argv[],
+                           std::string &jsonFilePath,
+                           std::string &outputDirectory,
+                           int &rounds,
+                           int &startRound,
+                           std::string &shiftsFilePath,
+                           std::string &lutFilePath)
 {
     po::options_description allOptions("Generic options");
     allOptions.add_options()("help",
-                             "produce help message")("json,j", po::value<std::string>(&jsonFilePath)->required(),
+                             "produce help message")("json,j",
+                                                     po::value<std::string>(&jsonFilePath)->required(),
                                                      "The input json file containing a vector of bin information")(
-        "output,o", po::value<std::string>(&outputDirectory)->default_value("."),
+        "output,o",
+        po::value<std::string>(&outputDirectory)->default_value("."),
         "Directory for output files (json, csv, root, ...). Files will still be prefixed with EC name and "
         "distribution.")("rounds,n", po::value<int>(&rounds)->default_value(1), "Number of rounds to dice")(
         "start,l", po::value<int>(&startRound)->default_value(0), "Number of round to skip in shifts file")(
-        "shifts,s", po::value<std::string>(&shiftsFilePath)->default_value("shifts.json"),
+        "shifts,s",
+        po::value<std::string>(&shiftsFilePath)->default_value("shifts.json"),
         "Json file containing vectors of normalized systematic shifts for each systematic")(
-        "lut", po::value<std::string>(&lutFilePath)->default_value(""),
+        "lut",
+        po::value<std::string>(&lutFilePath)->default_value(""),
         "LUT table to use, will choose automatically if not given.");
 
     // add json as positional argument
@@ -74,10 +87,12 @@ int main(int argc, char *argv[])
     std::string lutFilePath;
 
     // Read in command line options
-    int success = readCommandLineOptions(argc, argv, jsonFilePath, outputDirectory, rounds, startRound, shiftsFilePath,
-                                         lutFilePath);
+    int success = readCommandLineOptions(
+        argc, argv, jsonFilePath, outputDirectory, rounds, startRound, shiftsFilePath, lutFilePath);
     if (success > 0)
+    {
         return success;
+    }
 
     // Create ECScanner object
     ECScanner scanner(rounds, startRound);
@@ -93,43 +108,46 @@ int main(int argc, char *argv[])
     }
     else
     {
-        // Perform multiple scans with pseudo-data otherwise (signal or MC/MC)
+        // never process non-data scans
+        throw std::runtime_error(fmt::format("ERROR: Can not process non-data scan."));
 
-        // Load normalized systematic shifts: The json file is expected to contain a dictionary
-        // of lists. Each dictionary entry corresponds to one systematic, each systematic
-        // has multiple "pseudo-real-world" values, drawn from a normal distribution of width 1
-        // around 0. The normalized values will later be scaled and shifted to represent an
-        // uncertainty on the bin count.
-        scanner.readSystematicShiftsFile(shiftsFilePath);
+        // // Perform multiple scans with pseudo-data otherwise (signal or MC/MC)
 
-        for (unsigned int i = 0; i < scanner.getDicingRounds(); i++)
-        {
-            // calculate index used for loading the right shifts from the shifts.json file
-            unsigned int real_round_index = i + scanner.getFirstDicingRound();
+        // // Load normalized systematic shifts: The json file is expected to contain a dictionary
+        // // of lists. Each dictionary entry corresponds to one systematic, each systematic
+        // // has multiple "pseudo-real-world" values, drawn from a normal distribution of width 1
+        // // around 0. The normalized values will later be scaled and shifted to represent an
+        // // uncertainty on the bin count.
+        // scanner.readSystematicShiftsFile(shiftsFilePath);
 
-            // Dice pseudo experiment...
-            if (scanner.isSignalScan())
-            {
-                // Dice around the signal expectation.
-                // Note that the dicing result is still scanned against the *SM* expectation,
-                // not against the signal expectation.
-                scanner.diceSignalPseudoData(real_round_index);
-            }
-            else
-            {
-                // Dice around the SM expectation
-                scanner.diceMcPseudoData(real_round_index);
-            }
+        // for (unsigned int i = 0; i < scanner.getDicingRounds(); i++)
+        // {
+        //     // calculate index used for loading the right shifts from the shifts.json file
+        //     unsigned int real_round_index = i + scanner.getFirstDicingRound();
 
-            // find roi in pseudo data
-            scanner.findRoI();
+        //     // Dice pseudo experiment...
+        //     if (scanner.isSignalScan())
+        //     {
+        //         // Dice around the signal expectation.
+        //         // Note that the dicing result is still scanned against the *SM* expectation,
+        //         // not against the signal expectation.
+        //         scanner.diceSignalPseudoData(real_round_index);
+        //     }
+        //     else
+        //     {
+        //         // Dice around the SM expectation
+        //         scanner.diceMcPseudoData(real_round_index);
+        //     }
 
-            // print progress
-            if (i < 10 || (i < 100 && i % 10 == 0) || (i < 1000 && i % 100 == 0) || (i >= 1000 && i % 1000 == 0))
-            {
-                std::cout << i << "/" << scanner.getDicingRounds() << " rounds proccessed" << std::endl;
-            }
-        }
+        //     // find roi in pseudo data
+        //     scanner.findRoI();
+
+        //     // print progress
+        //     if (i < 10 || (i < 100 && i % 10 == 0) || (i < 1000 && i % 100 == 0) || (i >= 1000 && i % 1000 == 0))
+        //     {
+        //         std::cout << i << "/" << scanner.getDicingRounds() << " rounds proccessed" << std::endl;
+        //     }
+        // }
     }
 
     // Write result to CSV file

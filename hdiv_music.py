@@ -17,17 +17,11 @@ from data_models import Model
 
 def prepare_outputs():
     os.system("rm -rf outputs ; mkdir outputs")
+    os.system("mkdir -p outputs/music")
+    os.system("mkdir -p outputs/hdiv")
 
 
-def main():
-    prepare_outputs()
-    total_data = 10_000
-    sig_frac = 0.0
-    ref_model = Model(is_data=False, size=total_data, signal_fraction=0.0)
-    data_model = Model(
-        is_data=True, size=int(total_data / (1 - sig_frac)), signal_fraction=sig_frac
-    )
-
+def single_test_hdiv(total_data, sig_frac, ref_model, data_model):
     # plot input data
     fig = plt.figure()
     ax = plt.axes()
@@ -52,7 +46,7 @@ def main():
 
     ax.legend()
     ax.set_yscale("log")
-    fig.savefig(f"outputs/input_data.png")
+    fig.savefig(f"outputs/hdiv/input_data.png")
 
     # sample multiple ref_toys
     toys = ref_model.sample(10)
@@ -78,7 +72,7 @@ def main():
 
     ax.legend()
     ax.set_yscale("log")
-    fig.savefig(f"outputs/toy_data.png")
+    fig.savefig(f"outputs/hdiv/toy_data.png")
 
     js_data = distance.jensenshannon(
         ref_model.values / np.sum(ref_model.values),
@@ -102,7 +96,18 @@ def main():
     js_pvalue = np.sum(np.array(js_toys) >= js_data) / len(js_toys)
     ax.vlines(js_data, 0, np.max(vals), color="red", label=f"p-value: {js_pvalue}")
     ax.legend()
-    fig.savefig(f"outputs/js_dist.png")
+    fig.savefig(f"outputs/hdiv/js_dist.png")
+
+
+def main():
+    prepare_outputs()
+    total_data = 10_000
+    sig_frac = 0.0
+    ref_model = Model(is_data=False, size=total_data, signal_fraction=0.0)
+    data_model = Model(
+        is_data=True, size=int(total_data / (1 - sig_frac)), signal_fraction=sig_frac
+    )
+    single_test_hdiv(total_data, sig_frac, ref_model, data_model)
 
 
 if __name__ == "__main__":

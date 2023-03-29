@@ -2,6 +2,8 @@
 
 #include "util.h"
 
+#include "fmt/format.h"
+
 #include <algorithm>
 #include <cmath>
 #include <math.h>
@@ -34,8 +36,12 @@ namespace ph = std::placeholders;
 //
 //
 ECScanner::ECScanner(int &rounds, int &startRound)
-    : m_scanType(ScanType::unknown), m_numDicingRounds(rounds), m_firstDicingRound(startRound), m_scoreFunc("p-value"),
-      m_dicingProfiler("pseudo experiment generation"), m_roiFindingProfiler("RoI finding total"),
+    : m_scanType(ScanType::unknown),
+      m_numDicingRounds(rounds),
+      m_firstDicingRound(startRound),
+      m_scoreFunc("p-value"),
+      m_dicingProfiler("pseudo experiment generation"),
+      m_roiFindingProfiler("RoI finding total"),
       m_pValueProfiler("p-value calculation")
 {
     // initalize function maps
@@ -186,8 +192,13 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
             if (score >= 0)
             {
                 // store scan result
-                m_scanResultsCache.push_back(ScanResult(mcbin, data, score, m_integralScan,
-                                                        /* skipped = */ false, m_dataBins, m_totalMcEvents,
+                m_scanResultsCache.push_back(ScanResult(mcbin,
+                                                        data,
+                                                        score,
+                                                        m_integralScan,
+                                                        /* skipped = */ false,
+                                                        m_dataBins,
+                                                        m_totalMcEvents,
                                                         m_totalMcUncert));
                 fillRegionControlPlot(mcbin, -std::log10(score));
             }
@@ -203,6 +214,7 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
                 break;
             }
         }
+
         // mcbin contains complete integral after first inner loop finished
         if (startMCBinIter == m_mcBins.begin())
         {
@@ -210,13 +222,17 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
             data_integral = data;
             if (m_integralScan)
             {
-                bool skipped = vetoRegion(mcbin, data, startMCBinIter, endMCBinIter, startDataBinIter, endDataBinIter,
-                                          maxMCBinIter, m_integralScan);
+                bool skipped = vetoRegion(mcbin,
+                                          data,
+                                          startMCBinIter,
+                                          endMCBinIter,
+                                          startDataBinIter,
+                                          endDataBinIter,
+                                          maxMCBinIter,
+                                          m_integralScan);
                 const double score = thisScoreFunc(mcbin, data);
-                m_scanResultsCache.push_back(ScanResult(mcbin, data, score,
-                                                        /* integralScan = */ true,
-                                                        /* skipped = */ skipped, m_dataBins, m_totalMcEvents,
-                                                        m_totalMcUncert));
+                m_scanResultsCache.push_back(
+                    ScanResult(mcbin, data, score, true, skipped, m_dataBins, m_totalMcEvents, m_totalMcUncert));
                 break;
             }
         }
@@ -269,9 +285,14 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
     else
     { // no scan result found. Use integral of distribution as output
         // This result has to be skipped later in the analysis!
-        m_scanResults.push_back(ScanResult(mcbin_integral, data_integral, 1,
+        m_scanResults.push_back(ScanResult(mcbin_integral,
+                                           data_integral,
+                                           1,
                                            /* integralScan = */ true,
-                                           /* skipped = */ true, m_dataBins, m_totalMcEvents, m_totalMcUncert));
+                                           /* skipped = */ true,
+                                           m_dataBins,
+                                           m_totalMcEvents,
+                                           m_totalMcUncert));
     }
 
     if (not filtered)
@@ -282,14 +303,18 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
     m_roiFindingProfiler.stop();
 }
 
-//// Function to determine if a region should be skipped for scoreFunction calculation
+//// Function to determine if a region should be skipped for scoreFunction
+/// calculation
 //
 //
-bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::iterator const &startMCBinIter,
+bool ECScanner::vetoRegion(const MCBin &mcbin,
+                           double data,
+                           std::vector<MCBin>::iterator const &startMCBinIter,
                            std::vector<MCBin>::iterator const &endMCBinIter,
                            __attribute__((unused)) std::vector<double>::iterator const &startDataBinIter,
                            std::vector<double>::iterator const &endDataBinIter,
-                           std::vector<MCBin>::iterator const &maxMCBinIter, bool isIntegral)
+                           std::vector<MCBin>::iterator const &maxMCBinIter,
+                           bool isIntegral)
 {
 
     constexpr double no_data_threshold = 1e-9; // data values less than this will be treated as 0
@@ -303,7 +328,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
         fillRegionControlPlot(mcbin, SkipReason::EMPTY_BIN);
         return true;
     }
-
+    fmt::print("passei por aqui ...1\n ");
     if (data < no_data_threshold and mcbin.isEmpty())
     { // nothing (no MC, no data)
         // not a valid region
@@ -312,6 +337,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
         return true;
     }
 
+    fmt::print("passei por aqui ...2\n ");
     if (data > no_data_threshold and mcbin.isEmpty())
     {
         std::cerr << "Warning: Region with data but without MC!" << std::endl;
@@ -321,6 +347,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
         return true;
     }
 
+    fmt::print("passei por aqui ...3\n ");
     const double n_mc = mcbin.getTotalMcEvents();
     const double relative_uncert = std::abs(mcbin.getTotalMcUncert() / n_mc);
 
@@ -330,6 +357,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
         return true;
     }
 
+    fmt::print("passei por aqui ...4\n ");
     if (data < no_data_threshold and not mcbin.isEmpty() and
         (std::abs(n_mc / mcbin.getTotalMcStatUncert()) < m_coverageThreshold))
     {
@@ -338,6 +366,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
         return true;
     }
 
+    fmt::print("passei por aqui ...5\n ");
     const double adaptive_coverage_threshold = std::min(1.0, std::max(1.2 * std::pow(n_mc, -0.2), 0.5));
     if (relative_uncert > adaptive_coverage_threshold)
     { // too high uncert
@@ -346,6 +375,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
         return true;
     }
 
+    fmt::print("passei por aqui ...6\n ");
     // too insignificant for a full p-value calculation
     if (!isIntegral && std::abs(data - n_mc) / mcbin.getTotalMcUncert() < m_sigmaThreshold)
     {
@@ -354,6 +384,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
         return true;
     }
 
+    fmt::print("passei por aqui ...7\n ");
     if (n_mc <= 0.)
     {
         m_regionStatistics["skip: negative MC"]++;
@@ -361,6 +392,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
         return true;
     }
 
+    fmt::print("passei por aqui ...8\n ");
     const double threshold = -0.02 * n_mc;
     for (const double yield : mcbin.mcEventsPerProcessGroup)
     {
@@ -372,6 +404,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
         }
     }
 
+    fmt::print("passei por aqui ...9\n ");
     // Low-Statistics treatment as presented to EXO on 20. Jan 2016
 
     if (not m_noLowStatsTreatment)
@@ -384,6 +417,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
         }
     }
 
+    fmt::print("passei por aqui ...10\n ");
     // Neighborhood-based low stats vetos:
     std::vector<size_t> leadingBackgroundsNeighborhood;
     std::vector<size_t> leadingBackgroundsRegion;
@@ -424,7 +458,8 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
             }
 
             double process_fraction = mcbin.mcEventsPerProcessGroup[index] / mcbin.getTotalMcEvents();
-            // Check if a leading background from the neighborhood fluctuates up / down in the region
+            // Check if a leading background from the neighborhood fluctuates up /
+            // down in the region
             if (process_fraction <
                     leadingBackgroundsNeighborhoodFractions[index] - m_thresholdLowStatsDominatFraction ||
                 process_fraction > leadingBackgroundsNeighborhoodFractions[index] + m_thresholdLowStatsDominatFraction)
@@ -434,8 +469,8 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
                 return true;
             }
         }
-        // Check if a leading background from the region fluctuates up / down in the neighborhood
-        // this filters e.g. single spikes
+        // Check if a leading background from the region fluctuates up / down in the
+        // neighborhood this filters e.g. single spikes
         for (const int index : leadingBackgroundsRegion)
         {
             double process_fraction = neighborhood.mcEventsPerProcessGroup[index] / neighborhood.getTotalMcEvents();
@@ -448,13 +483,15 @@ bool ECScanner::vetoRegion(const MCBin &mcbin, double data, std::vector<MCBin>::
             }
         }
     }
+    fmt::print("passei por aqui ...11\n ");
 
     // no reason to skip region
     return false;
 }
 
 MCBin ECScanner::constructNeighborhood(
-    std::vector<MCBin>::iterator iter, const int width,
+    std::vector<MCBin>::iterator iter,
+    const int width,
     std::vector<MCBin>::iterator minIter, // minimal possible iterator
     std::vector<MCBin>::iterator maxIter  // maximally possible iterator (maximal filled bin + 1)
 )
@@ -497,8 +534,9 @@ double ECScanner::calcPvalMUSiC(const MCBin &bin, const double data) const
     m_pValueProfiler.start();
     double p = -1.;
 
-    // avoid caluclation if the difference between data and expecation is too large, just set it to a small p-value
-    // because our assumptions might not be valid below there.
+    // avoid caluclation if the difference between data and expecation is too
+    // large, just set it to a small p-value because our assumptions might not be
+    // valid below there.
     if ((std::abs(data - bin.getTotalMcEvents()) / bin.getTotalMcUncert()) > 7.0)
     {
         // Set the value at  1e-8 (a little more than 5 sigma), because
@@ -518,8 +556,9 @@ double ECScanner::calcPvalMUSiC(const MCBin &bin, const double data) const
         else
         {
             m_regionStatistics["lut: miss"]++;
-            // std::cout << "Miss at MC=" << bin.getTotalMcEvents() << ", UNCERT=" << bin.getTotalMcUncert() << ",
-            // DATA=" << data << std::endl; std::cerr << bin.getTotalMcEvents() << " " << bin.getTotalMcUncert() << " "
+            // std::cout << "Miss at MC=" << bin.getTotalMcEvents() << ", UNCERT=" <<
+            // bin.getTotalMcUncert() << ", DATA=" << data << std::endl; std::cerr <<
+            // bin.getTotalMcEvents() << " " << bin.getTotalMcUncert() << " "
             // << data << " " << p << std::endl;
         }
     }
@@ -641,8 +680,6 @@ void ECScanner::readLookupTable(const std::string filename)
 }
 
 //// read bin infos  and uncertainties in m_mcBins
-//
-//
 void ECScanner::readMCBinInfo()
 {
     assert(m_jsonDocument.HasMember("MCBins"));
@@ -700,7 +737,8 @@ std::vector<MCBin> ECScanner::readMCBinArray(const rs::Value &jsonArray, MCBin *
 
     // iterate over all MC Bin entries
     for (rs::SizeType i = 0; i < jsonArray.Size(); i++)
-    { // Uses SizeType instead of size_t
+    {
+        // Uses SizeType instead of size_t
         const rs::Value &jsonObject = jsonArray[i];
 
         const double lowerEdge = jsonObject["lowerEdge"].GetDouble();
@@ -714,7 +752,8 @@ std::vector<MCBin> ECScanner::readMCBinArray(const rs::Value &jsonArray, MCBin *
         MCBin::yield_vector mcEventsPerProcessGroup;
         int j = 0;
         for (rs::Value::ConstMemberIterator itr = mcEventsPerProcessObj.MemberBegin();
-             itr != mcEventsPerProcessObj.MemberEnd(); ++j, ++itr)
+             itr != mcEventsPerProcessObj.MemberEnd();
+             ++j, ++itr)
         {
             mcEventsPerProcessGroup.push_back(itr->value.GetDouble());
 
@@ -787,8 +826,13 @@ std::vector<MCBin> ECScanner::readMCBinArray(const rs::Value &jsonArray, MCBin *
         }
 
         // Construct MCBin and append to result
-        const MCBin mcBin(mcEventsPerProcessGroup, mcStatUncertPerProcessGroup, mcProcessGroupNames, lowerEdge, width,
-                          mcSysUncerts, mcSysUncertNames);
+        const MCBin mcBin(mcEventsPerProcessGroup,
+                          mcStatUncertPerProcessGroup,
+                          mcProcessGroupNames,
+                          lowerEdge,
+                          width,
+                          mcSysUncerts,
+                          mcSysUncertNames);
 
         if (integralBinOut != nullptr)
         {
@@ -802,8 +846,6 @@ std::vector<MCBin> ECScanner::readMCBinArray(const rs::Value &jsonArray, MCBin *
 }
 
 //// read in seeds and initalize map of random generators for each error
-//
-//
 void ECScanner::readSystematicShiftsFile(const std::string filename)
 {
     rs::Document document = readJsonDocument(filename);
@@ -834,8 +876,6 @@ void ECScanner::readSystematicShiftsFile(const std::string filename)
 }
 
 //// read bin infos in m_dataBins
-//
-//
 void ECScanner::readDataBinInfo()
 {
     assert(m_jsonDocument.HasMember("DataBins"));
@@ -1057,7 +1097,8 @@ void ECScanner::writeOutputFiles(const std::string outputDirectory)
         // Add object to list of scan results
         scanResultArray.PushBack(resultObject, allocator);
 
-        // Append line to CSV file: first 4 general fields, then info about the result
+        // Append line to CSV file: first 4 general fields, then info about the
+        // result
         resultCsvFile << m_submissionHash << "," << m_ECName << "," << m_distribution << "," << (m_firstDicingRound + i)
                       << ",";
         result.writeCsvLine(resultCsvFile);

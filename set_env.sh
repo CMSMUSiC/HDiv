@@ -6,5 +6,8 @@ source /cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc12-opt/setup.sh
 export CMAKE_GENERATOR=Ninja
 
 
+export SCAN_BASE=$SCRIPTDIR
+
+
 # set PATH
 export PATH=$PATH:$SCRIPTDIR/bin;
