@@ -192,14 +192,8 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
             if (score >= 0)
             {
                 // store scan result
-                m_scanResultsCache.push_back(ScanResult(mcbin,
-                                                        data,
-                                                        score,
-                                                        m_integralScan,
-                                                        /* skipped = */ false,
-                                                        m_dataBins,
-                                                        m_totalMcEvents,
-                                                        m_totalMcUncert));
+                m_scanResultsCache.push_back(ScanResult(
+                    mcbin, data, score, m_integralScan, false, m_dataBins, m_totalMcEvents, m_totalMcUncert));
                 fillRegionControlPlot(mcbin, -std::log10(score));
             }
             else
@@ -253,6 +247,7 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
 
         for (auto result : m_scanResultsCache)
         {
+
             if (final_score > 1)
             {
                 final_result = result;
@@ -328,7 +323,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
         fillRegionControlPlot(mcbin, SkipReason::EMPTY_BIN);
         return true;
     }
-    fmt::print("passei por aqui ...1\n ");
+    // fmt::print("Passei por aqui ... 1\n");
     if (data < no_data_threshold and mcbin.isEmpty())
     { // nothing (no MC, no data)
         // not a valid region
@@ -337,7 +332,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
         return true;
     }
 
-    fmt::print("passei por aqui ...2\n ");
+    // fmt::print("Passei por aqui ... 2\n");
     if (data > no_data_threshold and mcbin.isEmpty())
     {
         std::cerr << "Warning: Region with data but without MC!" << std::endl;
@@ -346,8 +341,8 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
         fillRegionControlPlot(mcbin, SkipReason::DATA_NO_MC);
         return true;
     }
+    // fmt::print("Passei por aqui ... 3\n");
 
-    fmt::print("passei por aqui ...3\n ");
     const double n_mc = mcbin.getTotalMcEvents();
     const double relative_uncert = std::abs(mcbin.getTotalMcUncert() / n_mc);
 
@@ -356,8 +351,8 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
         fillRegionControlPlot(mcbin, SkipReason::LOW_MC_YIELD);
         return true;
     }
+    // fmt::print("Passei por aqui ... 4\n");
 
-    fmt::print("passei por aqui ...4\n ");
     if (data < no_data_threshold and not mcbin.isEmpty() and
         (std::abs(n_mc / mcbin.getTotalMcStatUncert()) < m_coverageThreshold))
     {
@@ -365,8 +360,8 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
         fillRegionControlPlot(mcbin, SkipReason::MC_NO_DATA);
         return true;
     }
+    // fmt::print("Passei por aqui ... 5\n");
 
-    fmt::print("passei por aqui ...5\n ");
     const double adaptive_coverage_threshold = std::min(1.0, std::max(1.2 * std::pow(n_mc, -0.2), 0.5));
     if (relative_uncert > adaptive_coverage_threshold)
     { // too high uncert
@@ -374,8 +369,8 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
         fillRegionControlPlot(mcbin, SkipReason::HIGH_REL_UNCERT);
         return true;
     }
+    // fmt::print("Passei por aqui ... 6\n");
 
-    fmt::print("passei por aqui ...6\n ");
     // too insignificant for a full p-value calculation
     if (!isIntegral && std::abs(data - n_mc) / mcbin.getTotalMcUncert() < m_sigmaThreshold)
     {
@@ -383,16 +378,16 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
         fillRegionControlPlot(mcbin, SkipReason::SIGMA_THRESHOLD);
         return true;
     }
+    // fmt::print("Passei por aqui ... 7\n");
 
-    fmt::print("passei por aqui ...7\n ");
     if (n_mc <= 0.)
     {
         m_regionStatistics["skip: negative MC"]++;
         fillRegionControlPlot(mcbin, SkipReason::MC_NEGATIVE);
         return true;
     }
+    // fmt::print("Passei por aqui ... 8\n");
 
-    fmt::print("passei por aqui ...8\n ");
     const double threshold = -0.02 * n_mc;
     for (const double yield : mcbin.mcEventsPerProcessGroup)
     {
@@ -403,8 +398,8 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
             return true;
         }
     }
+    // fmt::print("Passei por aqui ... 9\n");
 
-    fmt::print("passei por aqui ...9\n ");
     // Low-Statistics treatment as presented to EXO on 20. Jan 2016
 
     if (not m_noLowStatsTreatment)
@@ -416,8 +411,8 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
             return true;
         }
     }
+    // fmt::print("Passei por aqui ... 10\n");
 
-    fmt::print("passei por aqui ...10\n ");
     // Neighborhood-based low stats vetos:
     std::vector<size_t> leadingBackgroundsNeighborhood;
     std::vector<size_t> leadingBackgroundsRegion;
@@ -483,7 +478,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
             }
         }
     }
-    fmt::print("passei por aqui ...11\n ");
+    // fmt::print("Passei por aqui ... 11\n");
 
     // no reason to skip region
     return false;
@@ -556,10 +551,10 @@ double ECScanner::calcPvalMUSiC(const MCBin &bin, const double data) const
         else
         {
             m_regionStatistics["lut: miss"]++;
-            // std::cout << "Miss at MC=" << bin.getTotalMcEvents() << ", UNCERT=" <<
-            // bin.getTotalMcUncert() << ", DATA=" << data << std::endl; std::cerr <<
-            // bin.getTotalMcEvents() << " " << bin.getTotalMcUncert() << " "
-            // << data << " " << p << std::endl;
+            // std::cout << "Miss at MC=" << bin.getTotalMcEvents() << ", UNCERT=" << bin.getTotalMcUncert()
+            //           << ", DATA=" << data << std::endl;
+            // std::cerr << bin.getTotalMcEvents() << " " << bin.getTotalMcUncert() << " " << data << " " << p
+            //           << std::endl;
         }
     }
 
@@ -580,6 +575,7 @@ double ECScanner::calcPvalMUSiC(const MCBin &bin, const double data) const
     }
 
     m_pValueProfiler.stop();
+    // fmt::print("p-value: {} - lowerEdge: {} - width: {}\n", p, bin.lowerEdge, bin.width);
     return p;
 }
 
@@ -1158,13 +1154,13 @@ void ECScanner::writeOutputFiles(const std::string outputDirectory)
     writeJsonDocument(infoJsonFilePath, infoJsonDocument);
 
     // write control plot
-    if (m_regionControlPlot != nullptr)
-    {
-        const std::string rootname = nameBase + "_regions.root";
-        TFile file(rootname.c_str(), "RECREATE");
-        m_regionControlPlot->Write();
-        file.Close();
-    }
+    // if (m_regionControlPlot != nullptr)
+    // {
+    //     const std::string rootname = nameBase + "_regions.root";
+    //     TFile file(rootname.c_str(), "RECREATE");
+    //     m_regionControlPlot->Write();
+    //     file.Close();
+    // }
 }
 
 std::string ECScanner::replaceExtension(const std::string filename, const std::string newExtension)

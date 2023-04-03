@@ -109,45 +109,45 @@ int main(int argc, char *argv[])
     else
     {
         // never process non-data scans
-        throw std::runtime_error(fmt::format("ERROR: Can not process non-data scan."));
+        // throw std::runtime_error(fmt::format("ERROR: Can not process non-data scan."));
 
-        // // Perform multiple scans with pseudo-data otherwise (signal or MC/MC)
+        // Perform multiple scans with pseudo-data otherwise (signal or MC/MC)
 
-        // // Load normalized systematic shifts: The json file is expected to contain a dictionary
-        // // of lists. Each dictionary entry corresponds to one systematic, each systematic
-        // // has multiple "pseudo-real-world" values, drawn from a normal distribution of width 1
-        // // around 0. The normalized values will later be scaled and shifted to represent an
-        // // uncertainty on the bin count.
-        // scanner.readSystematicShiftsFile(shiftsFilePath);
+        // Load normalized systematic shifts: The json file is expected to contain a dictionary
+        // of lists. Each dictionary entry corresponds to one systematic, each systematic
+        // has multiple "pseudo-real-world" values, drawn from a normal distribution of width 1
+        // around 0. The normalized values will later be scaled and shifted to represent an
+        // uncertainty on the bin count.
+        scanner.readSystematicShiftsFile(shiftsFilePath);
 
-        // for (unsigned int i = 0; i < scanner.getDicingRounds(); i++)
-        // {
-        //     // calculate index used for loading the right shifts from the shifts.json file
-        //     unsigned int real_round_index = i + scanner.getFirstDicingRound();
+        for (unsigned int i = 0; i < scanner.getDicingRounds(); i++)
+        {
+            // calculate index used for loading the right shifts from the shifts.json file
+            unsigned int real_round_index = i + scanner.getFirstDicingRound();
 
-        //     // Dice pseudo experiment...
-        //     if (scanner.isSignalScan())
-        //     {
-        //         // Dice around the signal expectation.
-        //         // Note that the dicing result is still scanned against the *SM* expectation,
-        //         // not against the signal expectation.
-        //         scanner.diceSignalPseudoData(real_round_index);
-        //     }
-        //     else
-        //     {
-        //         // Dice around the SM expectation
-        //         scanner.diceMcPseudoData(real_round_index);
-        //     }
+            // Dice pseudo experiment...
+            if (scanner.isSignalScan())
+            {
+                // Dice around the signal expectation.
+                // Note that the dicing result is still scanned against the *SM* expectation,
+                // not against the signal expectation.
+                scanner.diceSignalPseudoData(real_round_index);
+            }
+            else
+            {
+                // Dice around the SM expectation
+                scanner.diceMcPseudoData(real_round_index);
+            }
 
-        //     // find roi in pseudo data
-        //     scanner.findRoI();
+            // find roi in pseudo data
+            scanner.findRoI();
 
-        //     // print progress
-        //     if (i < 10 || (i < 100 && i % 10 == 0) || (i < 1000 && i % 100 == 0) || (i >= 1000 && i % 1000 == 0))
-        //     {
-        //         std::cout << i << "/" << scanner.getDicingRounds() << " rounds proccessed" << std::endl;
-        //     }
-        // }
+            // print progress
+            if (i < 10 || (i < 100 && i % 10 == 0) || (i < 1000 && i % 100 == 0) || (i >= 1000 && i % 1000 == 0))
+            {
+                std::cout << i << "/" << scanner.getDicingRounds() << " rounds proccessed" << std::endl;
+            }
+        }
     }
 
     // Write result to CSV file
