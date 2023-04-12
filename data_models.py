@@ -9,7 +9,7 @@ class Model:
         self,
         is_data: bool,
         size: int,
-        sample_size: int = 1000,
+        sample_size: int = 1000,  
     ):
         # Constant parameters
         self.num_syst = 3
@@ -17,16 +17,17 @@ class Model:
         # Histograms
         self.nbins = 30
         self.x_min = 0
-        self.x_max = 60
+        self.x_max = 60   
         # Background Model
         self.beta = 10
-        # Signal Model
+        # Signal Models
         # self.mu = (self.x_max + self.x_min) / 2.0
         self.mu = 40
         # self.mu = 10
-        self.sigma = 15
+        self.sigma = 1
 
         # Model specific
+
         self.is_data = is_data
         self.size = size
         # self.signal_size = signal_size
@@ -95,11 +96,11 @@ class Model:
 
         return np.sqrt(squared_sum)
 
-    def get_data_sample(self, signal_size=0):
+    def get_data_sample(self,mu,sigma, signal_size=0):
         # build signal
         _histo = Hist.new.Regular(self.nbins, self.x_min, self.x_max, name="x").Double()
         _histo.fill(
-            np.random.normal(self.mu, self.sigma, signal_size),
+            np.random.normal(mu,sigma, signal_size),
             # np.random.exponential(self.sigma, signal_size),
         )
         sampled_data = self.sample(is_data=True).flatten() + _histo.values()
