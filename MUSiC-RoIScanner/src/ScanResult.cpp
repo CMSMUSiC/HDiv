@@ -7,12 +7,31 @@
 
 namespace rs = rapidjson;
 
-ScanResult::ScanResult(const MCBin &mcbin, double data, double score, bool integralScan, bool skippedScan,
-                       const std::vector<double> &dicedData, double totalMc, double totalMcUncert)
-    : mcbin(mcbin), data(data), totalMc(totalMc), totalMcUncert(totalMcUncert), score(score),
-      integralScan(integralScan), skippedScan(skippedScan), dicedData(dicedData)
+ScanResult::ScanResult(const MCBin &mcbin,
+                       double data,
+                       double score,
+                       bool integralScan,
+                       bool skippedScan,
+                       const std::vector<double> &dicedData,
+                       double totalMc,
+                       double totalMcUncert,
+                       double js_distance)
+    : mcbin(mcbin),
+      data(data),
+      totalMc(totalMc),
+      totalMcUncert(totalMcUncert),
+      score(score),
+      integralScan(integralScan),
+      skippedScan(skippedScan),
+      js_distance(js_distance),
+      dicedData(dicedData)
 {
     totalData = std::accumulate(dicedData.begin(), dicedData.end(), 0.0);
+}
+
+void ScanResult::add_js_distance(double _js_distance)
+{
+    js_distance = _js_distance;
 }
 
 rs::Value ScanResult::rapidjsonValue(rs::Document::AllocatorType &allocator, bool verbose) const
@@ -98,12 +117,13 @@ void ScanResult::writeCsvHeader(std::ostream &out)
         << "ec_total_data_events,"
         << "score,"
         << "integral,"
-        << "skipped,";
+        << "skipped,"
+        << "js_distance,";
 }
 
 void ScanResult::writeCsvLine(std::ostream &out) const
 {
     out << mcbin.lowerEdge << "," << mcbin.width << "," << mcbin.getTotalMcEvents() << "," << mcbin.getTotalMcUncert()
         << "," << data << "," << totalMc << "," << totalMcUncert << "," << totalData << "," << score << ","
-        << integralScan << "," << skippedScan << ",";
+        << integralScan << "," << skippedScan << "," << js_distance << ",";
 }

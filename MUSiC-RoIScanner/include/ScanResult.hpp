@@ -8,6 +8,8 @@
 #define RAPIDJSON_HAS_STDSTRING 1
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wclass-memaccess"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
 #include "document.h"
 #pragma GCC diagnostic pop
 
@@ -16,9 +18,15 @@ namespace rs = rapidjson;
 class ScanResult
 {
   public:
-    ScanResult(const MCBin &mcbin = MCBin(), double data = 0, double score = 0, bool integralScan = false,
-               bool skippedScan = false, const std::vector<double> &dicedData = std::vector<double>(),
-               double totalMc = 0, double totalMcUncert = 0);
+    ScanResult(const MCBin &mcbin = MCBin(),
+               double data = 0,
+               double score = 0,
+               bool integralScan = false,
+               bool skippedScan = false,
+               const std::vector<double> &dicedData = std::vector<double>(),
+               double totalMc = 0,
+               double totalMcUncert = 0,
+               double js_distance = 0);
 
     // Significance comparison:
     // returns true if this result is more significant than 'other'
@@ -32,6 +40,7 @@ class ScanResult
 
     static void writeCsvHeader(std::ostream &out);
     void writeCsvLine(std::ostream &out) const;
+    void add_js_distance(double _js_distance);
 
     const MCBin &getMcBin() const
     {
@@ -86,6 +95,11 @@ class ScanResult
     bool integralScan;
 
     bool skippedScan;
+
+    // Jensen-Shanon distance
+
+    double js_distance;
+
     // data which has been diced/used for the scan resulting in this
     // RoI (especially important for signal scans)
     std::vector<double> dicedData;

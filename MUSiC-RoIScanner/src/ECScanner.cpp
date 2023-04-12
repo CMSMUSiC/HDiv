@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstddef>
 #include <math.h>
 #include <unordered_map>
 
@@ -298,6 +299,93 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
     m_roiFindingProfiler.stop();
 }
 
+//////////////////////////
+/// Find JS Distance
+
+auto normalize(const std::vector<double> &V) -> std::vector<double>
+{
+    std::vector<double> N(V.size(), 0);
+    double sum_of_elems = std::accumulate(V.begin(),
+                                          V.end(),
+
+                                          decltype(N)::value_type(0));
+
+    for (std::size_t i = 0; i < V.size(); i++)
+    {
+        N[i] = V[i] / sum_of_elems;
+    }
+
+    return N;
+}
+
+auto kl_div(const std::vector<double> &P, const std::vector<double> &Q) -> double
+{
+    double res = 0;
+
+    for (std::size_t i = 0; i < P.size(); i++)
+    {
+        if (P[i] != 0)
+        {
+            res += P[i] * log2(P[i] / Q[i]);
+        }
+    }
+    return res;
+}
+
+auto ECScanner::get_js_distance(std::vector<double> &data, std::vector<double> &ref_model) -> double
+{
+    std::vector<double> M(data.size(), 0);
+    std::vector<double> data_norm(data.size(), 0);
+    std::vector<double> ref_model_norm(data.size(), 0);
+
+    for (std::size_t i = 0; i < data.size(); i++)
+    {
+        if (data[i] < 0)
+        {
+            std::cout << "Negative Value in data " << data[i] << " has been changed to 0" << std::endl;
+            data[i] = 0;
+        }
+
+        if (ref_model[i] < 0)
+        {
+            std::cout << "Negative Value in data " << ref_model[i] << " has been changed to 0" << std::endl;
+            ref_model[i] = 0;
+        }
+    }
+
+    data_norm = normalize(data);
+    ref_model_norm = normalize(ref_model);
+
+    for (std::size_t i = 0; i < data.size(); i++)
+    {
+        M[i] = 0.5 * (data_norm[i] + ref_model_norm[i]);
+    }
+
+    return sqrt(0.5 * (kl_div(data_norm, M) + kl_div(ref_model_norm, M)));
+}
+
+void ECScanner::findJSDistance()
+{
+    // build ref_model vector
+    std::vector<double> ref_model_histogram;
+    for (std::size_t i = 0; i < m_mcBins.size(); i++)
+    {
+        ref_model_histogram.push_back(m_mcBins.at(i).getTotalMcEvents());
+    }
+
+    // build data vector
+    std::vector<double> data_histograms;
+    for (std::size_t i = 0; i < m_dataBins.size(); i++)
+    {
+        data_histograms.push_back(m_dataBins.at(i));
+    }
+
+    auto js_distance = get_js_distance(ref_model_histogram, data_histograms);
+
+    // update scan result
+    m_scanResults.at(m_scanResults.size() - 1).add_js_distance(js_distance);
+}
+
 //// Function to determine if a region should be skipped for scoreFunction
 /// calculation
 //
@@ -519,6 +607,7 @@ MCBin ECScanner::constructNeighborhood(
 void ECScanner::findRoI()
 {
     findRoI(m_scoreFunc, m_doFilter);
+    findJSDistance();
 }
 
 //// Calculate p-value following MUSiC convention
