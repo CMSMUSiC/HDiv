@@ -49,10 +49,10 @@ def main():
     data_model = ref_model.get_data_sample(signal_size=signal_size)
 
     # run a hdiv single test and produce plots
-    single_test_hdiv(total_data, signal_size, ref_model, data_model)
+    # single_test_hdiv(total_data, signal_size, ref_model, data_model)
 
     # run a MUSiC single test and produce plots
-    # single_test_music(total_data, signal_size, ref_model, data_model)
+    single_test_music(total_data, signal_size, ref_model, data_model)
 
     sample_sizes = [100, 300, 500, 700, 1000, 1500, 2000, 3000, 5000]
     signal_fractions = [0.015, 0.03, 0.05]
