@@ -307,7 +307,6 @@ auto normalize(const std::vector<double> &V) -> std::vector<double>
     std::vector<double> N(V.size(), 0);
     double sum_of_elems = std::accumulate(V.begin(),
                                           V.end(),
-
                                           decltype(N)::value_type(0));
 
     for (std::size_t i = 0; i < V.size(); i++)

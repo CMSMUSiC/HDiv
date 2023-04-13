@@ -144,6 +144,17 @@ def read_outputs(file_path):
             scores.append(float(row["score"]))
     return scores
 
+def read_outputs_js(file_path):
+    scores = []
+    with open(file_path, mode="r") as csv_file:
+        csv_reader = csv.DictReader(csv_file)
+        line_count = 0
+        for row in csv_reader:
+            if line_count == 0:
+                line_count += 1
+            scores.append(float(row["js_distance"]))
+    return scores
+
 
 def single_test_music(total_data, signal_size, ref_model: Model, data_model: Model):
     if (
@@ -276,7 +287,7 @@ def get_music_pvalue(ref_model: Model, data_model: Model):
     # print(f"MUSiC output: {scan_process.stdout}")
 
     p_data = read_outputs(f"{temp_dir_path}/Dummy_InvMass_output.csv")[0]
-
+    p_data_js = read_outputs_js(f"{temp_dir_path}/Dummy_InvMass_output.csv")[0]
     # print("BEGIN TOYS")
     # p_toys = []
     # for idx_toy, toy in tqdm(enumerate(ref_model.sample())):
@@ -360,10 +371,12 @@ def get_music_pvalue(ref_model: Model, data_model: Model):
         raise Exception(f"ERROR: Could not run MUSiC Scan on toys.")
 
     p_toys = np.array(read_outputs(f"{temp_dir_path}/toys/Dummy_InvMass_output.csv"))
+    p_toys_js = np.array(read_outputs_js(f"{temp_dir_path}/toys/Dummy_InvMass_output.csv"))
     # p_toys = np.array(p_toys)
 
     os.system(f"rm -rf {temp_dir_path}")
 
-    result = float(np.sum(p_toys <= p_data) / float(p_toys.shape[0]))
+    result =  float(np.sum(p_toys <= p_data) / float(p_toys.shape[0]))
+    result_js = float(np.sum(np.array(p_toys_js) >= p_data_js) / len(p_toys_js))   #WHY?????
     # return -1 * np.log(max(result, 1e-8))
-    return result
+    return result , result_js

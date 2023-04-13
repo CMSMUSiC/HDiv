@@ -20,9 +20,6 @@ from data_models import Model
 from hdiv import single_test_hdiv, get_js_pvalue
 from music import single_test_music, get_music_pvalue
 
-def memory_limit(limit):
-    soft, hard = rs.getrlimit(rs.RLIMIT_AS)
-    rs.setrlimit(rs.RLIMIT_AS, (limit, hard))
 
 
 def run_js_experiments_star(args):
@@ -43,8 +40,8 @@ def prepare_outputs():
 
 #Defining Global Parameters
 exp_mean = 10
-signal_mean = 53
-signal_std = 10                                                         
+signal_mean = 40
+signal_std = 1                                                         
 
 
 def run_js_experiments(ss, sf, number_of_toys):
@@ -65,8 +62,8 @@ def main():
 
     
 
-    sample_sizes = np.array([100,300,500,700,1000,3000])           #Which Sizes of Data should be calculated
-    signal_fractions = [0.01]                                         #Which fraction of the signal should be added
+    sample_sizes = np.array([100,300,500,700,1000,3000,5000])           #Which Sizes of Data should be calculated
+    signal_fractions = [0.01,0.03,0.05]                                         #Which fraction of the signal should be added
 
     
 
@@ -79,14 +76,92 @@ def main():
 
 
 
+#     #############################################
+#     ## JS Experiments
+#     #############################################
+#     rounds = 1
+#     NumberOfToys = 1
+#     js_results = {}
+#     with Pool(100) as pool:
+#         for sf in signal_fractions:
+#             js_results[sf] = {}
+#             js_results[sf]["sample_size"] = []
+#             js_results[sf]["mean"] = []
+#             js_results[sf]["std"] = []
+#             print(
+#                 "--------------------------------------------------------------------------------"
+#             )
+#             i = 0
+
+#             # run a hdiv single test and produce plots
+#             signal_size = int(total_data * sf)       
+#             ref_model = Model(is_data=False, size=total_data)
+#             data_model = ref_model.get_data_sample(signal_size=signal_size,mu=signal_mean,sigma=signal_std)
+#             single_test_hdiv(total_data, signal_size, ref_model, data_model,exp_mean,signal_mean,signal_std)
+
+
+
+#             for ss in sample_sizes:
+#                 i = i+1                 
+                
+                
+#                 adaptative_rounds = rounds
+
+#                 if sf <= 0.01:
+#                     adaptive_round =int( 1.5 * adaptative_rounds)
+#                     NumberOfToys = int(1.5 * NumberOfToys)
+#                     ss = ss * 2 
+
+#                 if ss <= 500:
+#                     adaptative_rounds = 2 * adaptative_rounds
+#                     NumberOfToys = int(1.5 * NumberOfToys)
+#                 elif ss <= 1000:
+#                     adaptative_rounds = int(1.5 *adaptative_rounds)
+#                 elif ss >= 5000:
+#                     adaptative_rounds = int(0.7 * adaptative_rounds)
+#                     NumberOfToys = int(0.7 * NumberOfToys) 
+                    
+                
+#                 js_results[sf]["sample_size"].append(ss)
+#                 js_p_values = []    
+#                 print(f"\n--> JS - Signal fraction: {sf} - Sample size: {ss}")    
+#                 inputs = [(ss, sf, NumberOfToys)] * adaptative_rounds    
+#                 start = time.monotonic()
+#                 run_js_experiments_star([ss, sf, NumberOfToys])
+#                 timeout = 5* (time.monotonic() - start)
+#                 results = progress_imap(run_js_experiments_star, inputs, 
+#                            process_timeout=timeout,  
+#                            initargs=(100,),
+#                            n_cpu=100,
+#                            error_behavior='coerce',
+#                            set_error_value="nan",
+#                            )
+
+#                 js_p_values = [value for value in results if value != "nan"]
+
+# #                js_p_values = list(tqdm.tqdm(pool.imap(run_js_experiments_star, inputs), total=len(inputs)))
+#                 js_results[sf]["mean"].append(np.mean(js_p_values))
+#                 js_results[sf]["std"].append(np.std(js_p_values))
+#                 print(js_results[sf]["mean"][-1])
+# #                if(i>1):
+# #                    if((js_results[sf]["mean"][-1]<=0.01) and (js_results[sf]["mean"][-2]<=0.05)): break
+
+#     # pprint(js_results, indent=4)
+
     #############################################
-    ## JS Experiments
+    ## MUSiC Experiments
     #############################################
-    rounds = 3000
-    NumberOfToys = 3000
+    rounds = 400                #Anzahl an p-Werten die in jedem Schritt berechnet werden um anschließend gemittelt zu werden.
+    NumberOfToys = 5000        # Die Anzahl an Toys um p~ zu berechen.
+    music_results = {}
     js_results = {}
-    with Pool(100) as pool:
+    with Pool(100) as pool:     #Multicore berechnung mit 120 cores
         for sf in signal_fractions:
+            music_results[sf] = {}
+            music_results[sf]["sample_size"] = []
+            music_results[sf]["mean"] = []
+            music_results[sf]["std"] = []
+
             js_results[sf] = {}
             js_results[sf]["sample_size"] = []
             js_results[sf]["mean"] = []
@@ -96,72 +171,13 @@ def main():
             )
             i = 0
 
-            # run a hdiv single test and produce plots
+            total_data = 2000
             signal_size = int(total_data * sf)       
             ref_model = Model(is_data=False, size=total_data)
             data_model = ref_model.get_data_sample(signal_size=signal_size,mu=signal_mean,sigma=signal_std)
             single_test_hdiv(total_data, signal_size, ref_model, data_model,exp_mean,signal_mean,signal_std)
 
-
-
-            for ss in sample_sizes:
-                i = i+1                 
-                
-                
-                adaptative_rounds = rounds
-
-                if sf <= 0.01:
-                    adaptive_round =int( 1.5 * adaptative_rounds)
-                    NumberOfToys = int(1.5 * NumberOfToys)
-                    ss = ss * 2 
-
-                if ss <= 500:
-                    adaptative_rounds = 2 * adaptative_rounds
-                    NumberOfToys = int(1.5 * NumberOfToys)
-                elif ss <= 1000:
-                    adaptative_rounds = int(1.5 *adaptative_rounds)
-                elif ss >= 5000:
-                    adaptative_rounds = int(0.7 * adaptative_rounds)
-                    NumberOfToys = int(0.7 * NumberOfToys) 
-                    
-                
-                js_results[sf]["sample_size"].append(ss)
-                js_p_values = []    
-                print(f"\n--> JS - Signal fraction: {sf} - Sample size: {ss}")    
-                inputs = [(ss, sf, NumberOfToys)] * adaptative_rounds    
-#                js_p_values = list(
-#                    
-#                    pool.starmap(
-#                        run_js_experiments,inputs)   
-#
-#                    )
-#                )
-                js_p_values = list(tqdm.tqdm(pool.imap(run_js_experiments_star, inputs), total=len(inputs)))
-                js_results[sf]["mean"].append(np.mean(js_p_values))
-                js_results[sf]["std"].append(np.std(js_p_values))
-                print(js_results[sf]["mean"][-1])
-#                if(i>1):
-#                    if((js_results[sf]["mean"][-1]<=0.01) and (js_results[sf]["mean"][-2]<=0.05)): break
-
-    # pprint(js_results, indent=4)
-
-    #############################################
-    ## MUSiC Experiments
-    #############################################
-    rounds = 300                #Anzahl an p-Werten die in jedem Schritt berechnet werden um anschließend gemittelt zu werden.
-    NumberOfToys = 5000         # Die Anzahl an Toys um p~ zu berechen.
-    music_results = {}
-    with Pool(100) as pool:     #Multicore berechnung mit 120 cores
-        for sf in signal_fractions:
-            music_results[sf] = {}
-            music_results[sf]["sample_size"] = []
-            music_results[sf]["mean"] = []
-            music_results[sf]["std"] = []
-            print(
-                "--------------------------------------------------------------------------------"
-            )
-            i = 0
-            for ss in sample_sizes: #Neugeneration der Daten? Ist das Gut?
+            for ss in sample_sizes: 
                 i = i+1
                 
                 
@@ -182,18 +198,36 @@ def main():
                     NumberOfToys = int(0.7 * NumberOfToys) 
 
                 music_results[sf]["sample_size"].append(ss)
+                js_results[sf]["sample_size"].append(ss)
                 music_p_values = []    
-                print(f"\n--> MUSiC - Signal fraction: {sf} - Sample size: {ss}")    
+                print(f"\n--> MUSiC / JS - Signal fraction: {sf} - Sample size: {ss}")    
                 inputs =   [(ss, sf, NumberOfToys)] * adaptative_rounds
-#                music_p_values = list(
-#                    pool.starmap(
-#                        run_music_experiments, [(ss, sf, NumberOfToys)] * adaptative_rounds #Number is the number of toys
-#                    )                                                                       # Führt die Funktion run_... mit  den nachfolgenden parametern aus.
-#                )
-                music_p_values = list(tqdm.tqdm(pool.imap(run_music_experiments_star, inputs), total=len(inputs)))
+
+
+                start = time.monotonic()
+                run_music_experiments_star([ss, sf, NumberOfToys])
+                timeout = 3* (time.monotonic() - start)
+                print("Time per Job: " + str(np.round(timeout,2)) + "s")
+                results = progress_imap(run_music_experiments_star, inputs, 
+                           process_timeout=timeout,  
+                           initargs=(100,),
+                           n_cpu=100,
+                           error_behavior='coerce',
+                           set_error_value=("nan","nan"),
+                           )
+                results = np.array(results,dtype=object)
+                music_p_values = [value for value in results[:,0] if value != "nan"]
+                js_p_values = [value for value in results[:,1] if value != "nan"]
+                print(len(music_p_values))
+                print(len(js_p_values))
+                print("Music:\t"+ str(np.round(np.mean(music_p_values),4)))
+                print("JS:\t" + str(np.round(np.mean(js_p_values),4)))
+ #               music_p_values = list(tqdm.tqdm(pool.imap(run_music_experiments_star, inputs), total=len(inputs)))
                 music_results[sf]["mean"].append(np.mean(music_p_values))
                 music_results[sf]["std"].append(np.std(music_p_values))
-                print(music_results[sf]["mean"][-1])
+                js_results[sf]["mean"].append(np.mean(js_p_values))
+                js_results[sf]["std"].append(np.std(js_p_values))
+#                print(music_results[sf]["mean"][-1])
 #                if(i > 1):
 #                    if( (music_results[sf]["mean"][-1]<=0.01) and (music_results[sf]["mean"][-2]<=0.05) ): break
 
