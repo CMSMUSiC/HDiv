@@ -8,6 +8,8 @@ export CMAKE_GENERATOR=Ninja
 
 export SCAN_BASE=$SCRIPTDIR
 
+# set python libraries path 
+export PYTHONPATH=$SCRIPTDIR/MUSiC-Utils/python:$PYTHONPATH
 
 # set PATH
 export PATH=$PATH:$SCRIPTDIR/bin;

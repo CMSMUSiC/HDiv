@@ -25,6 +25,9 @@ include_directories(
     ${LCG_BASE}/include/rapidjson
     ${CMAKE_SOURCE_DIR}/MUSiC-RoIScanner/include
 
+    ${CMAKE_SOURCE_DIR}/MUSiC-Utils/include
+    ${CMAKE_SOURCE_DIR}/TEventClass/include
+
     # ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/external/
     # ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/
     # ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Validation/include/
@@ -37,18 +40,8 @@ include_directories(
     # ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools/
     # ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Tools/PXL/
     # ${CMAKE_SOURCE_DIR}/NanoMUSiC/PxlAnalyzer/Main
-    # ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/include
 )
 
-# # correctionlib compilation and linking flags
-# execute_process(COMMAND correction config --cflags --ldflags --rpath OUTPUT_VARIABLE CORRECTIONLIB_FLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-# separate_arguments(CORRECTIONLIB_FLAGS)
-#
-# # compilation options
-# execute_process(COMMAND root-config --cflags OUTPUT_VARIABLE ROOT_CFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
-# separate_arguments(ROOT_CFLAGS)
-# add_compile_options(${ROOT_CFLAGS} ${CORRECTIONLIB_FLAGS} -fdiagnostics-color=always -MD -MP -O3 -Wall -pthread -m64 -ffloat-store)
-#
 # root linker options
 execute_process(COMMAND root-config --ldflags OUTPUT_VARIABLE ROOT_LDFLAGS OUTPUT_STRIP_TRAILING_WHITESPACE)
 separate_arguments(ROOT_LDFLAGS)
@@ -71,8 +64,6 @@ add_link_options(
     -fdiagnostics-color=always
     ${ROOT_LDFLAGS}
     ${ROOT_LIBS}
-
-    # ${CORRECTIONLIB_FLAGS}
     -L${LCG_BASE}/lib
     -L${LCG_BASE}/lib64
     -ldcap
@@ -86,13 +77,14 @@ add_link_options(
     -lboost_program_options
     -lLHAPDF
     -lfmt
-
-    # -L${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
+    -L${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
     -O3
     -lz
     -lstdc++fs
 )
-add_subdirectory(MUSiC-RoIScanner)
 
 # base library
-# add_subdirectory(MUSiC-RoIScanner)
+add_subdirectory(MUSiC-RoIScanner)
+
+# add_subdirectory(MUSiC-Utils)
+add_subdirectory(TEventClass)
