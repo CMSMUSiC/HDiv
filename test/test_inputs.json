@@ -1,0 +1,66 @@
+  {
+    "MCBins": [
+      {
+        "mcSysUncerts": {
+          "syst_1": 3
+        },
+        "mcStatUncertPerProcessGroup": {
+          "process_1": 10
+        },
+        "width": 10.0,
+        "mcEventsPerProcessGroup": {
+          "process_1": 100
+        },
+        "lowerEdge": 0.0
+      },
+      {
+        "mcSysUncerts": {
+          "syst_1": 3
+        },
+        "mcStatUncertPerProcessGroup": {
+          "process_1": 8.3
+        },
+        "width": 10.0,
+        "mcEventsPerProcessGroup": {
+          "process_1": 70
+        },
+        "lowerEdge": 10.0
+      },
+      {
+        "mcSysUncerts": {
+          "syst_1": 3
+        },
+        "mcStatUncertPerProcessGroup": {
+          "process_1": 7
+        },
+        "width": 10.0,
+        "mcEventsPerProcessGroup": {
+          "process_1": 50
+        },
+        "lowerEdge": 20.0
+      }
+    ],
+    "DataBins": [
+      112,
+      72,
+      49
+    ],
+    "NumRounds": 0,
+    "mcStatUncertScaleFactor": 1.0,
+    "hash": "abc",
+    "skipLookupTable": false,
+    "gridpack_name": "dummy_gridPack.tar.gz",
+    "dicedSignalUncertScaleFactor": 1.0,
+    "FirstRound": 0,
+    "widthLowStatsRegions": 1,
+    "regionYieldThreshold": 1e-06,
+    "distribution": "InvMass",
+    "dicedMCUncertScaleFactor": 1.0,
+    "integralScan": false,
+    "coverageThreshold": 0.0,
+    "minRegionWidth": 1,
+    "thresholdLowStatsDominant": 0.9,
+    "sigmaThreshold": 0.6,
+    "noLowStatsTreatment": false,
+    "name": "Dummy"
+  }

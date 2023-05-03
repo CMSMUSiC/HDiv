@@ -24,6 +24,8 @@ include_directories(
     ${LCG_BASE}/include
     ${LCG_BASE}/include/rapidjson
     ${CMAKE_SOURCE_DIR}/MUSiC-RoIScanner/include
+    ${CMAKE_SOURCE_DIR}/MUSiC-Utils/include
+    ${CMAKE_SOURCE_DIR}/PxlAnalyzer/Tools/
 
     # ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/external/
     # ${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC/include/
@@ -86,13 +88,13 @@ add_link_options(
     -lboost_program_options
     -lLHAPDF
     -lfmt
-
-    # -L${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
+    -L${CMAKE_SOURCE_DIR}/NanoMUSiC/MUSiC-Utils/lib
     -O3
     -lz
     -lstdc++fs
 )
 add_subdirectory(MUSiC-RoIScanner)
+add_subdirectory(MUSiC-Utils)
 
 # base library
 # add_subdirectory(MUSiC-RoIScanner)
