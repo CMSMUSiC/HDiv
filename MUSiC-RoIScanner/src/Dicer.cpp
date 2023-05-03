@@ -71,11 +71,13 @@ std::vector<double> Dicer::dicePoissonData(const std::vector<MCBin> &bins, const
     {
         const MCBin &bin = bins[i];
 
+
         // No need to dice pseudo data for empty bin
         if (!bin.isEmpty())
         {
             // New mean is constructed as the sum of systematic uncertainties and the current mean
             double stackedMean = bin.getTotalMcEvents();
+            
             for (size_t j = 0; j < bin.mcSysUncerts.size(); j++)
             {
                 // Using symmetrized errors in shifting! (approximation)
@@ -100,13 +102,13 @@ std::vector<double> Dicer::dicePoissonData(const std::vector<MCBin> &bins, const
             double newMean = stackedMean;
 
             // Smear mean with gaussian using statistical uncertainty
-            if (bin.getTotalMcStatUncert() != 0)
-            {
-                std::normal_distribution<double> gaus(stackedMean, bin.getTotalMcStatUncert());
+            // if (bin.getTotalMcStatUncert() != 0)
+            // {
+            //     std::normal_distribution<double> gaus(stackedMean, bin.getTotalMcStatUncert());
 
-                // Take the global generator which is uncorrelated between the bins
-                newMean = gaus(m_uncorrelatedGenerator);
-            }
+            //     // Take the global generator which is uncorrelated between the bins
+            //     newMean = gaus(m_uncorrelatedGenerator);
+            // }
 
             // Take care that value after dicing is still positive
             newMean = std::max<double>(newMean, 0);

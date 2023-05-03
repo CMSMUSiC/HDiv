@@ -68,6 +68,12 @@ MCBin &MCBin::operator+=(const MCBin &add)
         return *this;
     }
 
+    //Improvised Fix for binnign test
+    if( (lowerEdge + width >= add.lowerEdge -0.00001) and (lowerEdge + width <= add.lowerEdge + 0.00001) )
+    {
+        lowerEdge -= 0.00001;
+    }
+
     // recalculate bin borders and check if they match
     if ((lowerEdge < add.lowerEdge and ((lowerEdge + width) > add.lowerEdge)) or
         (lowerEdge > add.lowerEdge and ((add.lowerEdge + add.width) > lowerEdge)))

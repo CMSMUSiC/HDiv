@@ -9,13 +9,14 @@ class Model:
         self,
         is_data: bool,
         size: int,
+        bins: int = 30,
         sample_size: int = 2000,  
     ):
         # Constant parameters
         self.num_syst = 3
         self.sample_size = sample_size
         # Histograms
-        self.nbins = 30
+        self.nbins = bins
         self.x_min = 0
         self.x_max = 60   
         # Background Model
@@ -103,7 +104,7 @@ class Model:
             np.random.normal(mu,sigma, signal_size),
             # np.random.exponential(self.sigma, signal_size),
         )
-        sampled_data = self.sample(is_data=True).flatten() + _histo.values()
+        sampled_data = self.sample(is_data=True).flatten() - _histo.values()
         data_sample = Model(is_data=True, size=sampled_data.shape[0])
         data_sample.values = sampled_data
         data_sample.stats_uncert = np.sqrt(data_sample.values)

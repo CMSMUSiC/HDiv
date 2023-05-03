@@ -1,0 +1,87 @@
+[
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -DConvolutionLookup_EXPORTS -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fPIC -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/ConvolutionLookup.dir/src/ConvolutionLookup.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionLookup.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionLookup.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -DConvolutionLookup_EXPORTS -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fPIC -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/ConvolutionLookup.dir/src/ConvolutionComputer.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionComputer.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionComputer.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -DConvolutionComputer_EXPORTS -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fPIC -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/ConvolutionComputer.dir/src/ConvolutionComputer.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionComputer.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionComputer.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/pCalc.dir/src/ConvolutionComputer.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionComputer.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionComputer.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/pCalc.dir/src/ConvolutionLookup.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionLookup.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionLookup.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/pCalc.dir/src/pCalc.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/pCalc.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/pCalc.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/scanClass.dir/src/ConvolutionComputer.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionComputer.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionComputer.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/scanClass.dir/src/ECScanner.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ECScanner.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ECScanner.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/scanClass.dir/src/Dicer.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/Dicer.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/Dicer.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/scanClass.dir/src/MCBin.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/MCBin.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/MCBin.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/scanClass.dir/src/ScanResult.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ScanResult.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ScanResult.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/scanClass.dir/src/scanClass.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/scanClass.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/scanClass.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/scanClass.dir/src/util.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/util.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/util.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/scanClass.dir/src/ConvolutionLookup.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionLookup.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionLookup.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/createLookupTable.dir/src/ConvolutionComputer.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionComputer.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionComputer.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/createLookupTable.dir/src/ConvolutionLookup.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionLookup.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/ConvolutionLookup.cpp"
+},
+{
+  "directory": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11",
+  "command": "/cvmfs/sft.cern.ch/lcg/releases/gcc/11.3.0-ad0f5/x86_64-centos7/bin/g++ -I../NanoMUSiC -I/cvmfs/sft.cern.ch/lcg/releases/ROOT/6.26.08-34ede/x86_64-centos7-gcc11-opt/include -I/cvmfs/sft.cern.ch/lcg/views/LCG_102b/x86_64-centos7-gcc11-opt/include/rapidjson -I../MUSiC-RoIScanner/include -fdiagnostics-color=always -Wall -Wextra -std=c++17 -g -O3 -ffast-math -MD -MP -fPIC -pthread -std=gnu++17 -o MUSiC-RoIScanner/CMakeFiles/createLookupTable.dir/src/createLookupTable.cpp.o -c /home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/createLookupTable.cpp",
+  "file": "/home/home1/institut_3a/karwatzki/1_stage/HDiv/MUSiC-RoIScanner/src/createLookupTable.cpp"
+}
+]

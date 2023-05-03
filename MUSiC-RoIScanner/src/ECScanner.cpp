@@ -374,11 +374,17 @@ void ECScanner::findJSDistance()
 
     // build data vector
     std::vector<double> data_histograms;
+    //std::cout << "---- Music Toys -----" << std::endl;
     for (std::size_t i = 0; i < m_dataBins.size(); i++)
     {
         data_histograms.push_back(m_dataBins.at(i));
     }
+    // for(auto && v:data_histograms){
+    //     std::cout << v << "," ;
 
+    // }
+    //std::cout << std::endl;
+    
     auto js_distance = get_js_distance(ref_model_histogram, data_histograms);
 
     // update scan result

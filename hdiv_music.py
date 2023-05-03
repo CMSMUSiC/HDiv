@@ -40,7 +40,7 @@ def prepare_outputs():
 
 #Defining Global Parameters
 exp_mean = 10
-signal_mean = 40
+signal_mean = 7
 signal_std = 1                                                         
 
 
@@ -62,8 +62,8 @@ def main():
 
     
 
-    sample_sizes = np.array([100,300,500,700,1000,3000,5000])           #Which Sizes of Data should be calculated
-    signal_fractions = [0.01,0.03,0.05]                                         #Which fraction of the signal should be added
+    sample_sizes = np.array([100,300,500,700,1000,2000])           #Which Sizes of Data should be calculated
+    signal_fractions = [0.01]                                         #Which fraction of the signal should be added
 
     
 
@@ -71,8 +71,8 @@ def main():
     ref_model = Model(is_data=False, size=total_data)
     data_model = ref_model.get_data_sample(signal_size=signal_size,mu=signal_mean,sigma=signal_std)
 
-    # run a MUSiC single test and produce plots
-    single_test_music(total_data, signal_size, ref_model, data_model)
+    # # run a MUSiC single test and produce plots
+    #single_test_music(total_data, signal_size, ref_model, data_model)
 
 
 
@@ -151,11 +151,11 @@ def main():
     #############################################
     ## MUSiC Experiments
     #############################################
-    rounds = 400                #Anzahl an p-Werten die in jedem Schritt berechnet werden um anschließend gemittelt zu werden.
-    NumberOfToys = 5000        # Die Anzahl an Toys um p~ zu berechen.
+    rounds = 1                #Anzahl an p-Werten die in jedem Schritt berechnet werden um anschließend gemittelt zu werden.
+    NumberOfToys = 1       # Die Anzahl an Toys um p~ zu berechen.
     music_results = {}
     js_results = {}
-    with Pool(100) as pool:     #Multicore berechnung mit 120 cores
+    with Pool(105) as pool:     #Multicore berechnung mit 120 cores
         for sf in signal_fractions:
             music_results[sf] = {}
             music_results[sf]["sample_size"] = []
@@ -167,7 +167,7 @@ def main():
             js_results[sf]["mean"] = []
             js_results[sf]["std"] = []
             print(
-                "--------------------------------------------------------------------------------"
+                "-------------------------------------------------------------------------"
             )
             i = 0
 
@@ -176,89 +176,92 @@ def main():
             ref_model = Model(is_data=False, size=total_data)
             data_model = ref_model.get_data_sample(signal_size=signal_size,mu=signal_mean,sigma=signal_std)
             single_test_hdiv(total_data, signal_size, ref_model, data_model,exp_mean,signal_mean,signal_std)
+#            single_test_music(total_data, signal_size, ref_model, data_model)
 
             for ss in sample_sizes: 
-                i = i+1
+                 i = i+1
                 
                 
-                adaptative_rounds = rounds
+                 adaptative_rounds = rounds
 
-                if sf <= 0.01:
-                    adaptive_round =int( 1.5 * adaptative_rounds)
-                    NumberOfToys = int(1.5 * NumberOfToys)
-                    ss = ss * 2 
+                 if sf <= 0.01:
+                     adaptive_round =int( 1.5 * adaptative_rounds)
+                     NumberOfToys = int(1.5 * NumberOfToys)
+                     ss = ss * 2 
 
-                if ss <= 500:
-                    adaptative_rounds = 2 * adaptative_rounds
-                    NumberOfToys = int(1.5 * NumberOfToys)
-                elif ss <= 1000:
-                    adaptative_rounds = int(1.5 *adaptative_rounds)
-                elif ss >= 5000:
-                    adaptative_rounds = int(0.7 * adaptative_rounds)
-                    NumberOfToys = int(0.7 * NumberOfToys) 
+                 if ss <= 500:
+                     adaptative_rounds = 2 * adaptative_rounds
+                     NumberOfToys = int(1.5 * NumberOfToys)
+                 elif ss <= 1000:
+                     adaptative_rounds = int(1.5 *adaptative_rounds)
+                 elif ss >= 5000:
+                     adaptative_rounds = int(0.7 * adaptative_rounds)
+                     NumberOfToys = int(0.7 * NumberOfToys) 
 
-                music_results[sf]["sample_size"].append(ss)
-                js_results[sf]["sample_size"].append(ss)
-                music_p_values = []    
-                print(f"\n--> MUSiC / JS - Signal fraction: {sf} - Sample size: {ss}")    
-                inputs =   [(ss, sf, NumberOfToys)] * adaptative_rounds
+                 music_results[sf]["sample_size"].append(ss)
+                 js_results[sf]["sample_size"].append(ss)
+                 music_p_values = []    
+                 print(f"\n--> MUSiC / JS - Signal fraction: {sf} - Sample size: {ss}")    
+                 inputs =   [(ss, sf, NumberOfToys)] * adaptative_rounds
 
 
-                start = time.monotonic()
-                run_music_experiments_star([ss, sf, NumberOfToys])
-                timeout = 3* (time.monotonic() - start)
-                print("Time per Job: " + str(np.round(timeout,2)) + "s")
-                results = progress_imap(run_music_experiments_star, inputs, 
-                           process_timeout=timeout,  
-                           initargs=(100,),
-                           n_cpu=100,
-                           error_behavior='coerce',
-                           set_error_value=("nan","nan"),
-                           )
-                results = np.array(results,dtype=object)
-                music_p_values = [value for value in results[:,0] if value != "nan"]
-                js_p_values = [value for value in results[:,1] if value != "nan"]
-                print(len(music_p_values))
-                print(len(js_p_values))
-                print("Music:\t"+ str(np.round(np.mean(music_p_values),4)))
-                print("JS:\t" + str(np.round(np.mean(js_p_values),4)))
- #               music_p_values = list(tqdm.tqdm(pool.imap(run_music_experiments_star, inputs), total=len(inputs)))
-                music_results[sf]["mean"].append(np.mean(music_p_values))
-                music_results[sf]["std"].append(np.std(music_p_values))
-                js_results[sf]["mean"].append(np.mean(js_p_values))
-                js_results[sf]["std"].append(np.std(js_p_values))
-#                print(music_results[sf]["mean"][-1])
+                 start = time.monotonic()
+                 run_music_experiments_star([ss, sf, NumberOfToys]) #Optimierung über simple run und paralelisierung!
+                 timeout = 3* (time.monotonic() - start)
+                 print("Time per Job: " + str(np.round(timeout/60,0)) + " minutes and " + str(np.round(timeout%60,0))  + " seconds")
+                 results = progress_imap(run_music_experiments_star, inputs, 
+                            process_timeout=timeout,  
+                            initargs=(100,),
+                            n_cpu=105,
+                            error_behavior='coerce',
+                            set_error_value=("nan","nan"),
+                            )
+                 results = np.array(results,dtype=object)
+                 music_p_values = [value for value in results[:,0] if value != "nan"]
+                 js_p_values = [value for value in results[:,1] if value != "nan"]
+
+
+                 print("Music:\t"+ str(np.round(np.mean(music_p_values),4)))
+                 print("JS:\t" + str(np.round(np.mean(js_p_values),4)))
+#                music_p_values = list(tqdm.tqdm(pool.imap(run_music_experiments_star, inputs), total=len(inputs)))
+                 music_results[sf]["mean"].append(np.mean(music_p_values))
+                 music_results[sf]["std"].append(np.std(music_p_values))
+                 js_results[sf]["mean"].append(np.mean(js_p_values))
+                 js_results[sf]["std"].append(np.std(js_p_values))
+                 print(music_results[sf]["mean"][-1])
 #                if(i > 1):
 #                    if( (music_results[sf]["mean"][-1]<=0.01) and (music_results[sf]["mean"][-2]<=0.05) ): break
 
 
-    # pprint(music_results, indent=4)
+    pprint(music_results, indent=4)
 
-    # plot results
+#    plot results
     for sf in signal_fractions:
-        fig = plt.figure()
-        ax = plt.axes()
-        plt.errorbar(
-            js_results[sf]["sample_size"],
-            js_results[sf]["mean"],
-            yerr=js_results[sf]["std"],
-            fmt="o:",
-            label=f"JS - Signal Fraction: {float(sf*100):.1f}%",
-        )
+         fig = plt.figure()
+         ax = plt.axes()
+         plt.errorbar(
+             js_results[sf]["sample_size"],
+             js_results[sf]["mean"],
+             yerr=js_results[sf]["std"],
+             fmt="o:",
+             capsize = 5,
+             label=f"JS - Signal Fraction: {float(sf*100):.1f}%",
+         )
 
-        plt.errorbar(
-            music_results[sf]["sample_size"],
-            music_results[sf]["mean"],
-            yerr=music_results[sf]["std"],
-            fmt="s-",
-            label=f"MUSiC - Signal Fraction: {float(sf*100):.1f}%",
-        )
-        ax.legend()
-        ax.set_xlabel("Sample size")
-        ax.set_ylabel("Mean p-value")
-        fig.tight_layout()
-        # ax.set_yscale("log")
-        fig.savefig(f"outputs/experiments_{str(sf).replace('.', 'p')}.png")
+         plt.errorbar(
+             music_results[sf]["sample_size"],
+             music_results[sf]["mean"],
+             yerr=music_results[sf]["std"],
+             fmt="s-",
+             capsize = 8,
+             label=f"MUSiC - Signal Fraction: {float(sf*100):.1f}%",
+         )
+         ax.legend()
+         ax.set_xlabel("Sample size")
+         ax.set_ylabel("Mean p-value")
+         fig.tight_layout()
+         # ax.set_yscale("log")
+         fig.savefig(f"outputs/experiments_{str(sf).replace('.', 'p')}.png")
 
 
 if __name__ == "__main__":

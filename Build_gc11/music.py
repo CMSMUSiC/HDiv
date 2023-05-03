@@ -275,7 +275,6 @@ def get_music_pvalue(ref_model: Model, data_model: Model):
         ref_model.bins,
         verbose=False,
     )
-
     scan_process = subprocess.run(
         [
             "MUSiC-RoIScanner/scanClass",
@@ -291,11 +290,10 @@ def get_music_pvalue(ref_model: Model, data_model: Model):
         # stdout=subprocess.DEVNULL,
         # stderr=subprocess.STDOUT,
     )
- 
     os.system(f"rm -rf {input_json}")
 
     if scan_process.returncode != 0:
-        print(f"MUSiC output: {scan_process.stdout}")
+        print(f"MUSiC output : {scan_process.stderr}")
         raise Exception(f"ERROR: Could not run MUSiC Scan.")
 
     # print(f"MUSiC output: {scan_process.stdout}")
@@ -390,8 +388,8 @@ def get_music_pvalue(ref_model: Model, data_model: Model):
 
     os.system(f"rm -rf {temp_dir_path}")
 
-    result =  float(np.sum(p_toys <= p_data) / float(p_toys.shape[0]))
-    result_js = float(np.sum(np.array(p_toys_js) >= p_data_js) / len(p_toys_js))   
+    result =  max(float(np.sum(p_toys <= p_data) / float(p_toys.shape[0])),1/float(p_toys.shape[0]))
+    result_js = max(float(np.sum(np.array(p_toys_js) >= p_data_js) / len(p_toys_js)),1/float(p_toys.shape[0]))   
     # return -1 * np.log(max(result, 1e-8))
 
 

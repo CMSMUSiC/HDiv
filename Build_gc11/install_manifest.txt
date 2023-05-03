@@ -1,0 +1,5 @@
+/home/home1/institut_3a/karwatzki/1_stage/HDiv/bin/createLookupTable
+/home/home1/institut_3a/karwatzki/1_stage/HDiv/bin/scanClass
+/home/home1/institut_3a/karwatzki/1_stage/HDiv/bin/pCalc
+/home/home1/institut_3a/karwatzki/1_stage/HDiv/lib/libConvolutionComputer.so
+/home/home1/institut_3a/karwatzki/1_stage/HDiv/lib/libConvolutionLookup.so

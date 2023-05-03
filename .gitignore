@@ -11,6 +11,13 @@ pycache/
 .Python
 build/
 Build/
+Build_gc11/test_outputs
+Build_gc11/Results
+Build_gc11/outputs
+Build_gc11/.cccp
+Build_gc11/CMakeFiles
+Build_gc11/MUSiC-RoIScanner/
+Build_gc11/task.tar.gz
 bin/
 develop-eggs/
 dist/
