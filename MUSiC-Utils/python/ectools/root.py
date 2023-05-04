@@ -180,9 +180,7 @@ class ECRootHelper(ECIOHelper):
                 total.Add(hist)
             # Loop over all possible systematic names, even if they are not
             # present in this particular process.
-            print(f"Process name: {process}")
             for systematic in list(event_class.getSystematicNames()):
-                print(f"Systematics: {systematic}")
                 # Skip  _down systematics (explanation see below for _up).
                 # Note that this does not check the presence of
                 # an _up systematic, thus the code is not failure-proof here.
@@ -209,11 +207,9 @@ class ECRootHelper(ECIOHelper):
                 # Calculate the absolute difference:
                 # uncertainty = |shifted - count|
 
-                print("DEBUG 1")
                 hist_syst_diff = root_absolute_difference(
                     hist, hist_systematic, sign_if_first_negative=True
                 )
-                print("DEBUG 2")
                 # If the systematic name ends with Up, there must be a
                 # systematic with the same name, just ending with Down.
                 # Those two are symmetrized.
