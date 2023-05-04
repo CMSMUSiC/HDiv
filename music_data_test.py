@@ -85,33 +85,26 @@ def _flatten(item):
         return item
 
 
-def _extract_mc_bins(
-    event_class, distribution, filter_systematics=None, scan_key=""
-):
+def _extract_mc_bins(event_class, distribution, filter_systematics=None, scan_key=""):
     if filter_systematics is None:
         filter_systematics = []
-    print("Debuging -MCBINS - 1")    
     mc_hists = ecroot.event_yield_by_process_group(
         event_class, distribution, aggregation_level="none"
     )
-    print("Debuging -MCBINS - 2")    
     uncertainty_hists = ecroot.combined_uncertainty_by_systematic_name(
         event_class,
         distribution,
         symmetrize=False,
         filter_systematics=filter_systematics,
     )
-    print("Debuging -MCBINS - 3")    
-    unweighted_hists = cls._extract_histograms(event_class, distribution)
-    retval = cls._hists2bins(mc_hists, uncertainty_hists, unweighted_hists, scan_key)
-    print("Debuging -MCBINS - 4")    
+    unweighted_hists = _extract_histograms(event_class, distribution)
+    retval = _hists2bins(mc_hists, uncertainty_hists, unweighted_hists, scan_key)
     for hist in mc_hists.values():
         hist.Delete()
     for hist in uncertainty_hists.values():
         hist.Delete()
     for hists in unweighted_hists.values():
         hists["hist"].Delete()
-    print("Debuging -MCBINS - 5")    
     return retval
 
 
@@ -242,13 +235,10 @@ def main():
 
     # configs
     ec_names = ["Rec_2Muon+X"]
-    n_rounds = 3            #Number of toys
+    n_rounds = 3  # Number of toys
 
     # Open the ROOT file and loop over all objects
-    mc_root_file = ROOT.TFile.Open(
-        "/disk1/ykaiser/sharing/Lucas/bg.root"
-    )
-    
+    mc_root_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg.root")
 
     signal_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg_2000.root")
     signal_names = [key.GetName() for key in signal_file.GetListOfKeys()]
@@ -276,27 +266,28 @@ def main():
     # Make Scan JSON
     d = {
         "gridpack_name": "Dummy_gridpack_name",
-        "minRegionWidth": 1, # Just used for invariant Mass / change later
-        "coverageThreshold": 0.0, #Same for all
-        "regionYieldThreshold": 1e-06, #Same for all
-        "sigmaThreshold": 0.6, #Same for all
-        "integralScan": False, #Same for all
-        "skipLookupTable": False, #Same for all
-        "noLowStatsTreatment": False, #Same for all
-        "widthLowStatsRegions": 4, #Same for all
-        "thresholdLowStatsDominant": 0.9, #Same for all
-        "mcStatUncertScaleFactor": 1.0, #Same for all
-        "dicedMCUncertScaleFactor": 1.0, #Same for all
-        "dicedSignalUncertScaleFactor": 1.0, #Same for all
-        "hash": "Dummy_hash", #Create Hash later
-        "name": ec_names[0],  #Automatize
-        "distribution": "InvMass", # automatize ("SumPt")
+        "minRegionWidth": 1,  # Just used for invariant Mass / change later
+        "coverageThreshold": 0.0,  # Same for all
+        "regionYieldThreshold": 1e-06,  # Same for all
+        "sigmaThreshold": 0.6,  # Same for all
+        "integralScan": False,  # Same for all
+        "skipLookupTable": False,  # Same for all
+        "noLowStatsTreatment": False,  # Same for all
+        "widthLowStatsRegions": 4,  # Same for all
+        "thresholdLowStatsDominant": 0.9,  # Same for all
+        "mcStatUncertScaleFactor": 1.0,  # Same for all
+        "dicedMCUncertScaleFactor": 1.0,  # Same for all
+        "dicedSignalUncertScaleFactor": 1.0,  # Same for all
+        "hash": "Dummy_hash",  # Create Hash later
+        "name": ec_names[0],  # Automatize
+        "distribution": "InvMass",  # automatize ("SumPt")
     }
 
     mc_ec = ecroot.read_ec_object(mc_root_file, ec_names[0])
+    print(f"systematics: {mc_ec.getSystematicNames()}")
     d["MCBins"] = _flatten(
         _extract_mc_bins(
-            mc_ec, distribution = d["distribution"], filter_systematics = None, scan_key = ""
+            mc_ec, distribution=d["distribution"], filter_systematics=None, scan_key=""
         )
     )
     print("Debuging")
@@ -325,12 +316,11 @@ def main():
     #                                                   self.filter_systematics ))
     d["SignalBins"] = _flatten(
         self._extract_mc_bins(
-            signal_ec, d["distribution"], filter_systematics = None ,scan_key = ""
+            signal_ec, d["distribution"], filter_systematics=None, scan_key=""
         )
     )
     d["FirstRound"] = 0
     d["NumRounds"] = n_rounds
-
 
     with open("scann.json", "wb") as jf:
         json.dump(d, jf, indent=2)
