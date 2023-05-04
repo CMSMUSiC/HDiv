@@ -152,8 +152,10 @@ class ECRootHelper(ECIOHelper):
 
         combined_systematics = {}
         total = None
+        print("Debuging -combining uncertainties - 1")    
         import processgroup
         # Loop over all processes to combine systematics.
+        print("Debuging -combining uncertainties - 2")    
         for process in list(event_class.ProcessList()):
             hist = event_class.getHistoPointer(process, distribution)
 
@@ -165,40 +167,48 @@ class ECRootHelper(ECIOHelper):
                 total = hist.Clone()
             else:
                 total.Add(hist)
-
+            print("Debuging -combining uncertainties - 3")    
             # Loop over all possible systematic names, even if they are not
             # present in this particular process.
             for systematic in list(event_class.getSystematicNames()):
                 # Skip  _down systematics (explanation see below for _up).
                 # Note that this does not check the presence of
                 # an _up systematic, thus the code is not failure-proof here.
+                print("Debuging -combining uncertainties - 3.1") 
                 if symmetrize and systematic.endswith('Down'):
                     continue
 
                 if filter_systematics and cls._skip_systematic( process, systematic, filter_systematics ):
                     continue
-
+                print("Debuging -combining uncertainties - 3.2") 
                 hist_systematic = event_class.getSystHistoPointer(process,
                                                                   distribution,
                                                                   systematic)
 
                 # Filter out systematics that are not present.
+                print("Debuging -combining uncertainties - 3.3") 
                 if not hist_systematic:
                     continue
+                print("Debuging -combining uncertainties - 3.4") 
                 group = processgroup.get_process_group(process)
+                print("Debuging -combining uncertainties - 3.5") 
                 if systematic.startswith("qcdWeight") and not systematic.startswith("qcdWeight%s_" % group):
                     # consider qcd weights only for processes of the specific group
                     continue
-
+                print("Debuging -combining uncertainties - 3.6") 
                 # Calculate the absolute difference:
                 # uncertainty = |shifted - count|
+
+                print(f"--> before call ({systematic}):")
                 hist_syst_diff = root_absolute_difference(hist,
                                                           hist_systematic,
                                                           sign_if_first_negative=True)
-
                 # If the systematic name ends with Up, there must be a
                 # systematic with the same name, just ending with Down.
                 # Those two are symmetrized.
+                print(f"--> hist_syst ({systematic}):")
+                hist_syst_diff.Print("all")
+                print("Debuging -combining uncertainties - 4")    
                 if symmetrize and systematic.endswith('Up'):
                     systematic = systematic[:-len('Up')]
 
@@ -227,7 +237,7 @@ class ECRootHelper(ECIOHelper):
                     # Cleaning up of temporary histograms.
                     hist_syst_diff_up.Delete()
                     hist_syst_diff_down.Delete()
-
+                print("Debuging -combining uncertainties - 5")    
                 # Add to existing systematic entry or clone the histogram
                 # and store it.
                 # Treat systematics as *fully* correlated -> linear sum
@@ -245,12 +255,14 @@ class ECRootHelper(ECIOHelper):
 
                 # hist_systematic must not be deleted, it's owned by the
                 # Event Class.
+        print("Debuging -combining uncertainties - 6")            
         if relative:
             for syst in combined_systematics:
                 combined_systematics[syst].Divide(total)
         # hist must not be deleted, it's owned by the Event Class.
         if total:
             total.Delete()
+        print("Debuging -combining uncertainties - 7")        
         if with_stat:
             combined_systematics["MCstat"] = cls.total_combined_stat_uncertainty(
                                                     event_class,
@@ -381,7 +393,7 @@ class ECRootHelper(ECIOHelper):
         if not group or aggregation_level=="customDY" or aggregation_level=="customWJ":
             group = process
         grouping_dict = cls.get_aggregation_groups().get(aggregation_level, {})
-        for group_name, aggregated_group_name in grouping_dict.iteritems():
+        for group_name, aggregated_group_name in grouping_dict.items():
             if fnmatch.fnmatchcase(group, group_name):
                 return aggregated_group_name
         return group

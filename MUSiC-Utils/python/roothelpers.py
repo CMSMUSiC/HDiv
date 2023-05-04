@@ -167,26 +167,35 @@ def root_first_filled_bin( hist ):
     return i
 
 def root_absolute_difference( hist1, hist2, sign_if_first_negative=False):
+    print("Debuging - absolute difference - 1")
     N = hist1.GetNbinsX()
+    print("Debuging - absolute difference - 2")
     if hist2.GetNbinsX() != N:
         raise ValueError( "Different number of bins encountered while computing difference." )
-
+    print("Debuging - absolute difference - 3")
     combined = hist1.Clone()
     success = combined.Add( hist2, -1 )
+    print("Debuging - absolute difference - 4")
     if not success:
         raise ValueError( "Error while adding histograms." )
 
     # Performance optimization and ensurance to be always positive
+    print("Debuging - absolute difference - 5")
     if combined.GetMaximum() < 0:
         combined.Scale( -1 )
-
+    print("Debuging - absolute difference - 6")
     if combined.GetMinimum() < 0:
+        print("Debuging - absolute difference - 7")
         for ibin in range( combined.GetNbinsX() ):
+            print("Debuging - absolute difference - 8")
             if combined.GetBinContent( ibin + 1 ) < 0:
                 combined.SetBinContent( ibin + 1, - combined.GetBinContent( ibin + 1 ) )
+                print("Debuging - absolute difference - 9")
             if sign_if_first_negative and hist1.GetBinContent(ibin + 1) < 0:
                 combined.SetBinContent( ibin + 1, - combined.GetBinContent( ibin + 1 ) )
-
+                print("Debuging - absolute difference - 10")
+    print("Debuging - absolute difference - 11")
+    combined.Print("all")
     return combined
 
 

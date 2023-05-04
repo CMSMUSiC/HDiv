@@ -86,29 +86,32 @@ def _flatten(item):
 
 
 def _extract_mc_bins(
-    cls, event_class, distribution, filter_systematics=None, scan_key=""
+    event_class, distribution, filter_systematics=None, scan_key=""
 ):
     if filter_systematics is None:
         filter_systematics = []
+    print("Debuging -MCBINS - 1")    
     mc_hists = ecroot.event_yield_by_process_group(
         event_class, distribution, aggregation_level="none"
     )
+    print("Debuging -MCBINS - 2")    
     uncertainty_hists = ecroot.combined_uncertainty_by_systematic_name(
         event_class,
         distribution,
         symmetrize=False,
         filter_systematics=filter_systematics,
     )
+    print("Debuging -MCBINS - 3")    
     unweighted_hists = cls._extract_histograms(event_class, distribution)
     retval = cls._hists2bins(mc_hists, uncertainty_hists, unweighted_hists, scan_key)
-
+    print("Debuging -MCBINS - 4")    
     for hist in mc_hists.values():
         hist.Delete()
     for hist in uncertainty_hists.values():
         hist.Delete()
     for hists in unweighted_hists.values():
         hists["hist"].Delete()
-
+    print("Debuging -MCBINS - 5")    
     return retval
 
 
@@ -239,12 +242,13 @@ def main():
 
     # configs
     ec_names = ["Rec_2Muon+X"]
-    n_rounds = 3
+    n_rounds = 3            #Number of toys
 
     # Open the ROOT file and loop over all objects
     mc_root_file = ROOT.TFile.Open(
-        "/home/home1/institut_3a/silva/projects/music/music_data/bg.root"
+        "/disk1/ykaiser/sharing/Lucas/bg.root"
     )
+    
 
     signal_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg_2000.root")
     signal_names = [key.GetName() for key in signal_file.GetListOfKeys()]
@@ -264,73 +268,71 @@ def main():
 
     # create shifts.json
     shifts_json = "shifts.json"
-    systematics = collect_systematics(ec_names, mc_file, signal_file)
+    systematics = collect_systematics(ec_names, mc_root_file, signal_file)
     shifts = create_systematic_shifts(systematics, n_rounds)
     with open(shifts_json, "w") as file:
         json.dump(_flatten(shifts), file, **JSON_DEFAULTS)
 
     # Make Scan JSON
     d = {
-        "gridpack_name": self.gridpack_base_name,
-        "minRegionWidth": self.minRegionWidth,
-        "coverageThreshold": self.coverageThreshold,
-        "regionYieldThreshold": self.regionYieldThreshold,
-        "sigmaThreshold": self.sigmaThreshold,
-        "integralScan": self.integralScan,
-        "skipLookupTable": self.skipLookupTable,
-        "noLowStatsTreatment": self.noLowStatsTreatment,
-        "widthLowStatsRegions": self.widthLowStatsRegions,
-        "thresholdLowStatsDominant": self.thresholdLowStatsDominant,
-        "mcStatUncertScaleFactor": self.mcStatUncertScaleFactor,
-        "dicedMCUncertScaleFactor": self.dicedMCUncertScaleFactor,
-        "dicedSignalUncertScaleFactor": self.dicedSignalUncertScaleFactor,
-        "hash": self.scan_hash,
-        "name": self.ec_name,
-        "distribution": self.distribution,
+        "gridpack_name": "Dummy_gridpack_name",
+        "minRegionWidth": 1, # Just used for invariant Mass / change later
+        "coverageThreshold": 0.0, #Same for all
+        "regionYieldThreshold": 1e-06, #Same for all
+        "sigmaThreshold": 0.6, #Same for all
+        "integralScan": False, #Same for all
+        "skipLookupTable": False, #Same for all
+        "noLowStatsTreatment": False, #Same for all
+        "widthLowStatsRegions": 4, #Same for all
+        "thresholdLowStatsDominant": 0.9, #Same for all
+        "mcStatUncertScaleFactor": 1.0, #Same for all
+        "dicedMCUncertScaleFactor": 1.0, #Same for all
+        "dicedSignalUncertScaleFactor": 1.0, #Same for all
+        "hash": "Dummy_hash", #Create Hash later
+        "name": ec_names[0],  #Automatize
+        "distribution": "InvMass", # automatize ("SumPt")
     }
 
-    mc_ec = ecroot.read_ec_object(self.mc_root_file, self.ec_name)
+    mc_ec = ecroot.read_ec_object(mc_root_file, ec_names[0])
     d["MCBins"] = _flatten(
-        self._extract_mc_bins(
-            mc_ec, self.distribution, self.filter_systematics, self.scan_key
+        _extract_mc_bins(
+            mc_ec, distribution = d["distribution"], filter_systematics = None, scan_key = ""
         )
     )
-    if self.data:
-        data_ec = ecroot.read_ec_object(self.data_root_file, self.ec_name)
-        empty = False
-        if not data_ec:
-            data_ec = mc_ec
-            empty = True
-        hist = ecroot.total_event_yield(data_ec, self.distribution)
-        d["DataBins"] = _flatten(
-            roothelpers.root_map_hist(hist.GetBinContent, hist, empty)
+    print("Debuging")
+    # if self.data:
+    #     data_ec = ecroot.read_ec_object(self.data_root_file, self.ec_name)
+    #     empty = False
+    #     if not data_ec:
+    #         data_ec = mc_ec
+    #         empty = True
+    #     hist = ecroot.total_event_yield(data_ec, self.distribution)
+    #     d["DataBins"] = _flatten(
+    #         roothelpers.root_map_hist(hist.GetBinContent, hist, empty)
+    #    )
+    signal_ec = ecroot.read_ec_object(signal_file, ec_names[0])
+    # merged_ec = mc_ec.Copy()
+    # if signal_ec:
+    #    # merge signal and background to build the s+b hypothesis
+    #    all_processes = merged_ec.getGlobalProcessList()
+    #    # build a root set object to interact with TEventClass object
+    #    processesToMerge = r.set( 'string' )()
+    #    for proc in all_processes:
+    #        processesToMerge.insert( processesToMerge.begin(), str( proc ) )
+    #    merged_ec.addEventClass( signal_ec, processesToMerge, False )
+    # d['SignalBins'] = _flatten( self._extract_mc_bins( merged_ec,
+    #                                                   self.distribution,
+    #                                                   self.filter_systematics ))
+    d["SignalBins"] = _flatten(
+        self._extract_mc_bins(
+            signal_ec, d["distribution"], filter_systematics = None ,scan_key = ""
         )
-    elif self.signal:
-        signal_ec = ecroot.read_ec_object(self.signal_root_file, self.ec_name)
-        # merged_ec = mc_ec.Copy()
-        # if signal_ec:
-        #    # merge signal and background to build the s+b hypothesis
-        #    all_processes = merged_ec.getGlobalProcessList()
-        #    # build a root set object to interact with TEventClass object
-        #    processesToMerge = r.set( 'string' )()
-        #    for proc in all_processes:
-        #        processesToMerge.insert( processesToMerge.begin(), str( proc ) )
-        #    merged_ec.addEventClass( signal_ec, processesToMerge, False )
-        # d['SignalBins'] = _flatten( self._extract_mc_bins( merged_ec,
-        #                                                   self.distribution,
-        #                                                   self.filter_systematics ))
-        d["SignalBins"] = _flatten(
-            self._extract_mc_bins(
-                signal_ec, self.distribution, self.filter_systematics, self.scan_key
-            )
-        )
-        d["FirstRound"] = 0
-        d["NumRounds"] = self.nrounds_signal
-    else:
-        d["FirstRound"] = self.first_round
-        d["NumRounds"] = self.last_round - self.first_round
-    self.output().makedirs()
-    with open(self.output().path, "wb") as jf:
+    )
+    d["FirstRound"] = 0
+    d["NumRounds"] = n_rounds
+
+
+    with open("scann.json", "wb") as jf:
         json.dump(d, jf, indent=2)
 
 
