@@ -13,6 +13,8 @@ export SCAN_BASE=$SCRIPTDIR
 # set PATH
 export PATH=$PATH:$SCRIPTDIR/bin;
 
+cd $SCRIPTDIR/tools/
+source set_env.sh
 
 cd $SCRIPTDIR/MUSiC-Utils/
 source set_env.sh
