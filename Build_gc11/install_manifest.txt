@@ -3,3 +3,6 @@
 /home/home1/institut_3a/karwatzki/1_stage/HDiv/bin/pCalc
 /home/home1/institut_3a/karwatzki/1_stage/HDiv/lib/libConvolutionComputer.so
 /home/home1/institut_3a/karwatzki/1_stage/HDiv/lib/libConvolutionLookup.so
+/home/home1/institut_3a/karwatzki/1_stage/HDiv/lib/objects/TEventClassDict/TEventClassDict.cxx.o
+/home/home1/institut_3a/karwatzki/1_stage/HDiv/lib/libTEventClass_rdict.pcm
+/home/home1/institut_3a/karwatzki/1_stage/HDiv/lib/libTEventClass.so

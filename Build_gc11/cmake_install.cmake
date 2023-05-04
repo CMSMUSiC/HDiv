@@ -45,6 +45,7 @@ endif()
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
   include("/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11/MUSiC-RoIScanner/cmake_install.cmake")
+  include("/home/home1/institut_3a/karwatzki/1_stage/HDiv/Build_gc11/MUSiC-Utils/cmake_install.cmake")
 
 endif()
 

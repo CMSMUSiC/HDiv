@@ -14,7 +14,8 @@ import math
 
 
 
-location = "./test_outputs/Mu_35-sig_10"
+location = "./test_outputs/Mu_53-sig_10"
+print("Begin harvesting")
 CondorScheduler.harvest(location)
 
 f = open(location + "/job_id_to_args.json")
@@ -26,7 +27,7 @@ js_results = {}
 
 
 exp_mean = 10
-signal_mean = 35
+signal_mean = 53
 signal_std = 10
 
 

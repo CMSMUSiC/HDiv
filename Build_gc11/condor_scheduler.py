@@ -116,6 +116,7 @@ class CondorScheduler:
             job_id_to_args = json.load(f)
 
         for id in job_id_to_args:
+            if(int(id) % 10 == 0): print(id)
             with open(f"{output_path}/job_id_{id}/condor.out") as f:
                 #Checking return code:
                 folder_path = f"{output_path}/job_id_{id}"

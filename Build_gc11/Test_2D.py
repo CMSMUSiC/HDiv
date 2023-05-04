@@ -50,7 +50,7 @@ from uncertainties import ufloat
 
 # Defining Global Parameters
 exp_mean = 10
-signal_mean = (35, 53)
+signal_mean = (350, 530)
 signal_std = [[5, 5], [5, 5]]
 
 
@@ -96,8 +96,8 @@ def main():
     #############################################
     # MUSiC Experiments
     #############################################
-    rounds = 4000
-    NumberOfToys = 15000
+    rounds = 1
+    NumberOfToys = 1
     js_results_2D = {}
     js_results_x = {}
     js_results_y = {}
