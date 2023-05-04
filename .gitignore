@@ -22,7 +22,6 @@ bin/
 develop-eggs/
 dist/
 downloads/
-test.py
 test_js_distance.cpp
 eggs/
 .eggs/
