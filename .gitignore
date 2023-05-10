@@ -10,7 +10,12 @@ pycache/
 # Distribution / packaging
 .Python
 build/
+scann.json
 Build/
+example.txt
+DEBUG/
+Build_Stage2/
+Build_gc11/shifts.json
 Build_gc11/test_outputs
 Build_gc11/Results
 Build_gc11/outputs

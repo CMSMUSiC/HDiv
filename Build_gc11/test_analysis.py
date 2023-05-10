@@ -4,8 +4,8 @@ from data_models import Model
 from hdiv import single_test_hdiv
 
 exp_mean = 10
-signal_mean = 7
-signal_std = 1    
+signal_mean = 53
+signal_std = 1   
 
 def main():
     condor_scheduler = CondorScheduler(
@@ -25,10 +25,10 @@ def main():
             ],
         )
     
-    sample_fraction = [0.01,0.03,0.05,0.10]
+    sample_fraction = [0.1,0.2]#[0.01,0.03,0.05,0.10]
     samplesize = [100,300,500,1000,3000,5000,10000,20000]
  #   samplesize = [300,700,5000]
-    rounds = 2500
+    rounds = 10
     numberoftoys = 15000
     #For testing the Number of Bins
 #    Binsize = range(1,70,4)

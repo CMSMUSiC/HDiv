@@ -102,13 +102,14 @@ std::vector<double> Dicer::dicePoissonData(const std::vector<MCBin> &bins, const
             double newMean = stackedMean;
 
             // Smear mean with gaussian using statistical uncertainty
-            // if (bin.getTotalMcStatUncert() != 0)
-            // {
-            //     std::normal_distribution<double> gaus(stackedMean, bin.getTotalMcStatUncert());
-
-            //     // Take the global generator which is uncorrelated between the bins
-            //     newMean = gaus(m_uncorrelatedGenerator);
-            // }
+            // DEBUG Lucas WIP // comparison JSD / MUSiC - P
+            //if (bin.getTotalMcStatUncert() != 0)
+            //{
+            //    std::normal_distribution<double> gaus(stackedMean, bin.getTotalMcStatUncert());
+            //
+                // Take the global generator which is uncorrelated between the bins
+            //    newMean = gaus(m_uncorrelatedGenerator);
+            //}
 
             // Take care that value after dicing is still positive
             newMean = std::max<double>(newMean, 0);

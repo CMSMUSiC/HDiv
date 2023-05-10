@@ -154,7 +154,8 @@ template <class ClockType> class ClockProfiler
 
         stream.precision(3);
         // stream << std::scientific;
-
+        //DEBUG LUCAS
+        
         stream << "Profiler '" << profiler.name() << "':" << std::endl;
         stream << "\tCount: " << profiler.count() << std::endl;
         stream << "\tTotal: " << profiler.sum() << " sec" << std::endl;
@@ -166,6 +167,7 @@ template <class ClockType> class ClockProfiler
         stream.precision(precision);
         stream.flags(flags);
         return stream;
+        
     }
 
     // this function provides support for rapidjson

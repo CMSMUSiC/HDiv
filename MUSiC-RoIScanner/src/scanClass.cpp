@@ -108,6 +108,7 @@ int main(int argc, char *argv[])
     }
     else
     {
+        
         // never process non-data scans
         // throw std::runtime_error(fmt::format("ERROR: Can not process non-data scan."));
 
@@ -128,6 +129,7 @@ int main(int argc, char *argv[])
             // Dice pseudo experiment...
             if (scanner.isSignalScan())
             {
+                std::cout << "---- HELLO WORLD! I AM SIGNAL! ----" << std::endl;
                 // Dice around the signal expectation.
                 // Note that the dicing result is still scanned against the *SM* expectation,
                 // not against the signal expectation.
@@ -135,6 +137,7 @@ int main(int argc, char *argv[])
             }
             else
             {
+                std::cout << "---- HELLO WORLD! I AM BACKGROUND! ----" << std::endl;
                 // Dice around the SM expectation
                 scanner.diceMcPseudoData(real_round_index);
             }
@@ -144,8 +147,9 @@ int main(int argc, char *argv[])
 
             // print progress
             if (i < 10 || (i < 100 && i % 10 == 0) || (i < 1000 && i % 100 == 0) || (i >= 1000 && i % 1000 == 0))
+            // Debug Lucas
             {
-                std::cout << i << "/" << scanner.getDicingRounds() << " rounds proccessed" << std::endl;
+                //std::cout << i << "/" << scanner.getDicingRounds() << " rounds proccessed" << std::endl;
             }
         }
     }

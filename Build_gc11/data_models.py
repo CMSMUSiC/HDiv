@@ -104,7 +104,12 @@ class Model:
             np.random.normal(mu,sigma, signal_size),
             # np.random.exponential(self.sigma, signal_size),
         )
-        sampled_data = self.sample(is_data=True).flatten() - _histo.values()
+        sampled_data = np.zeros(len(_histo.values()))
+        for i in range(len(_histo.values())):
+            if( (self.sample(is_data=True).flatten()[i] - _histo.values()[i]) > 0 ):
+                sampled_data[i] = self.sample(is_data=True).flatten()[i] - _histo.values()[i]
+            else:
+                sampled_data[i] =0
         data_sample = Model(is_data=True, size=sampled_data.shape[0])
         data_sample.values = sampled_data
         data_sample.stats_uncert = np.sqrt(data_sample.values)

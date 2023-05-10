@@ -14,7 +14,7 @@ import math
 
 
 
-location = "./test_outputs/Mu_53-sig_10"
+location = "./test_outputs/outputs_2023_05_08_18_28_09"
 print("Begin harvesting")
 CondorScheduler.harvest(location)
 
@@ -28,12 +28,13 @@ js_results = {}
 
 exp_mean = 10
 signal_mean = 53
-signal_std = 10
+signal_std = 1    
+
 
 
 
 # Directory
-directory = "exp-" + str(exp_mean) + ", sig_mean-" + str(signal_mean) + ", sig_std- " + str(signal_std)
+directory = "Nexp-" + str(exp_mean) + ", sig_mean-" + str(signal_mean) + ", sig_std- " + str(signal_std)
   
 # Parent Directory pathw
 parent_dir = "./Results/1D_JS"

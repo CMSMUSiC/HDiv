@@ -4,6 +4,9 @@
 
 #include "fmt/format.h"
 
+#include <iostream>
+#include <fstream>
+
 #include <algorithm>
 #include <cmath>
 #include <cstddef>
@@ -26,6 +29,7 @@
 #include "writer.h"
 
 #include "ConvolutionComputer.hpp"
+
 
 namespace rs = rapidjson;
 namespace ph = std::placeholders;
@@ -69,6 +73,7 @@ ECScanner::~ECScanner()
 
 void ECScanner::finalize()
 {
+    /*
     // print stuff, etc.
     std::cout << "=== PROFILERS ===" << std::endl;
     std::cout << m_dicingProfiler << std::endl;
@@ -78,7 +83,7 @@ void ECScanner::finalize()
     for (const auto pair : m_regionStatistics)
     {
         std::cout << pair.first << " = " << pair.second << std::endl;
-    }
+    } */
 }
 
 ////////////////////////////////////////////////
@@ -305,14 +310,23 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
 auto normalize(const std::vector<double> &V) -> std::vector<double>
 {
     std::vector<double> N(V.size(), 0);
+    std::cout << "Value in Elements: ";
+    for (std::size_t i = 0; i < V.size(); i++)
+    {
+        std::cout << V[i] << ",";
+    }
+    std::cout << std::endl;
     double sum_of_elems = std::accumulate(V.begin(),
                                           V.end(),
                                           decltype(N)::value_type(0));
-
-    for (std::size_t i = 0; i < V.size(); i++)
-    {
+    std::cout << "Sum Of elements: " << sum_of_elems << std::endl;
+    if(sum_of_elems != 0){
+        for (std::size_t i = 0; i < V.size(); i++)
+        {
         N[i] = V[i] / sum_of_elems;
-    }
+        }
+    } 
+    
 
     return N;
 }
@@ -336,22 +350,26 @@ auto ECScanner::get_js_distance(std::vector<double> &data, std::vector<double> &
     std::vector<double> M(data.size(), 0);
     std::vector<double> data_norm(data.size(), 0);
     std::vector<double> ref_model_norm(data.size(), 0);
-
+    //DEBUG LUCAS
     for (std::size_t i = 0; i < data.size(); i++)
     {
+        //std::cout << "Data: ";
+        //std::cout << data[i] << "," ;
         if (data[i] < 0)
         {
             std::cout << "Negative Value in data " << data[i] << " has been changed to 0" << std::endl;
             data[i] = 0;
         }
-
+        //std::cout << std::endl;
+        //std::cout << "refmodel: ";
+        std::cout << ref_model[i] << "," ;
         if (ref_model[i] < 0)
         {
             std::cout << "Negative Value in data " << ref_model[i] << " has been changed to 0" << std::endl;
             ref_model[i] = 0;
         }
+        //std::cout << std::endl;
     }
-
     data_norm = normalize(data);
     ref_model_norm = normalize(ref_model);
 
@@ -367,24 +385,33 @@ void ECScanner::findJSDistance()
 {
     // build ref_model vector
     std::vector<double> ref_model_histogram;
+    std::fstream myfile ("example.txt");
+
+    myfile << "[";
     for (std::size_t i = 0; i < m_mcBins.size(); i++)
     {
         ref_model_histogram.push_back(m_mcBins.at(i).getTotalMcEvents());
+        myfile << m_mcBins.at(i).getTotalMcEvents();
+        myfile << ",";
     }
-
+    myfile << "]" << std::endl; 
     // build data vector
+    myfile << "[";
     std::vector<double> data_histograms;
     //std::cout << "---- Music Toys -----" << std::endl;
     for (std::size_t i = 0; i < m_dataBins.size(); i++)
     {
         data_histograms.push_back(m_dataBins.at(i));
+        myfile << m_dataBins.at(i);
+        myfile << ",";
     }
+    myfile << "]" << std::endl; 
     // for(auto && v:data_histograms){
     //     std::cout << v << "," ;
 
     // }
     //std::cout << std::endl;
-    
+    myfile.close();
     auto js_distance = get_js_distance(ref_model_histogram, data_histograms);
 
     // update scan result
@@ -630,7 +657,7 @@ double ECScanner::calcPvalMUSiC(const MCBin &bin, const double data) const
     {
         // Set the value at  1e-8 (a little more than 5 sigma), because
         // our assumptions might not be valid below there.
-        p = 1e-8;
+       // p = 1e-8;
     }
 
     if (not m_skipLookupTable)
