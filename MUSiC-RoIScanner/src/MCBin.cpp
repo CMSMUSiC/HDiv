@@ -132,6 +132,8 @@ bool MCBin::operator!=(const MCBin &comp) const
 
 ostream &operator<<(ostream &out, const MCBin &bin)
 {
+    // DEBUG LUCAS
+    /*
     out << "MCBin(" << bin.lowerEdge << ", " << (bin.lowerEdge + bin.width) << ")" << std::endl;
     out << "Events: " << bin.getTotalMcEvents() << " +/- " << bin.getTotalMcStatUncert() << std::endl;
     out << "Processes: " << std::endl;
@@ -154,7 +156,7 @@ ostream &operator<<(ostream &out, const MCBin &bin)
         {
             out << " " << error.first << " - " << error.second << std::endl;
         }
-    }
+    }*/
     return out;
 }
 
@@ -176,7 +178,7 @@ double MCBin::getTotalMcUncert() const
     {
         totalUncertCache = sqrt(pow(getTotalMcStatUncert(), 2) + pow(getTotalMcSystUncert(), 2));
     }
-
+    //DEBUG LUCAS
     return totalUncertCache;
 }
 

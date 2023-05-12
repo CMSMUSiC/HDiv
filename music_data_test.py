@@ -278,24 +278,25 @@ def _hists2bins( mc_hists, uncertainty_hists, unweighted_hists, scan_key=""):
 def calculation(ec_name,n_rounds,mc_root_file_name,signal_file_name,IS_SIGNAL = False):
     mc_root_file = ROOT.TFile.Open(mc_root_file_name)
     
-#    mc_root_file = mc_root_file[0]
-#    signal_file = signal_file[0]
-#    print(mc_root_file)
-#    print(signal_file)
+
     key = mc_root_file.GetKey(ec_name)
     event_class = key.ReadObj()
     Kin_distribution = event_class.getDistTypes()
-    #Kin_distribution = ["InvMass"]
+#    Kin_distribution = ["InvMass"]
     for distribution in Kin_distribution:
         distribution = str(distribution)
         # create shifts.json
-        shifts_json = "Build_Stage2/JS_scannfiles/"+ distribution +"/shifts-"+ec_name+".json"
+        shifts_json = "Build_Stage2/JS_scannfiles/"+ distribution +"/shifts-"+ec_name+".json"   #Change  Later/ One shift file
+
         if(IS_SIGNAL):
             signal_file = ROOT.TFile.Open(signal_file_name)
             systematics = collect_systematics([ec_name], mc_root_file, signal_file)
+
         if(not IS_SIGNAL):   
             systematics = collect_systematics([ec_name], mc_root_file, signal_file=None)
+
         shifts = create_systematic_shifts(systematics, n_rounds)
+        os.system("rm -rf "+ shifts_json + ">> /dev/null" )
         with open(shifts_json, "w") as file:
             json.dump(_flatten(shifts), file, **JSON_DEFAULTS)
 
@@ -305,7 +306,7 @@ def calculation(ec_name,n_rounds,mc_root_file_name,signal_file_name,IS_SIGNAL = 
         # Make Scan JSON
         d = {
             "gridpack_name": "Dummy_gridpack_name",
-            "minRegionWidth": 1,  # Just used for invariant Mass / change later
+            "minRegionWidth": minRegionWidth,  # Just used for invariant Mass / change later
             "coverageThreshold": 0.0,  # Same for all
             "regionYieldThreshold": 1e-06,  # Same for all
             "sigmaThreshold": 0.6,  # Same for all
@@ -371,7 +372,7 @@ def calculation(ec_name,n_rounds,mc_root_file_name,signal_file_name,IS_SIGNAL = 
             #print(d["SignalBins"])
         d["FirstRound"] = 0
         d["NumRounds"] = n_rounds
-
+        os.system("rm -rf Build_Stage2/JS_scannfiles/"+ distribution +"/"+ec_name+".json >> /dev/null" )
         with open("Build_Stage2/JS_scannfiles/"+ distribution +"/"+ec_name+".json", "w") as jf:
             json.dump(d, jf, indent=2) 
         #subprocess.run() capture output = true / Turorial REAL python subproces.
@@ -403,7 +404,7 @@ def main():
     
 
     n_rounds =200  # Number of signal to Average
-    n_toys = 5000             #Number of Toys
+    n_toys = 1000             #Number of Toys
     # Open the ROOT file and loop over all objects
     mc_root_file_name = "Build_Stage2/Lucas/bg.root"
     mc_root_file = ROOT.TFile.Open("Build_Stage2/Lucas/bg.root")
@@ -413,17 +414,23 @@ def main():
     signal_names = [key.GetName() for key in signal_file.GetListOfKeys()]
     mc_names = [key.GetName() for key in mc_root_file.GetListOfKeys()]
 
-
+    i = 0
     #Checking allready included
     for mc_name in mc_names:
         if not mc_name in signal_names:
+            
             err_msg = "Class %s only in mc file but missing in signal file" % mc_name
             logger.error(err_msg)
             err_msg = "Maybe you forgot to merge background and signal "
             err_msg += "or merged with --filter option ?"
             logger.error(err_msg)
             raise RuntimeError(err_msg)
+        print(mc_name)    
+        if( i == 10): break
+        i = i+1 
+        print(i)
     i = 0
+    #mc_names = ["Rec_1Ele_1MET"]
     mc_root_file.Close()
     signal_file.Close()
     
@@ -441,13 +448,13 @@ def main():
         
     progress_map(calculation_star, inputs_background, 
                          initargs=(100,),
-                         n_cpu=80,
+                         n_cpu=105,
                          error_behavior='coerce',
 #                         set_error_value=("nan","nan"),
                         )    
     progress_map(calculation_star, inputs_signal, 
                          initargs=(100,),
-                         n_cpu=80,
+                         n_cpu=105,
                          error_behavior='coerce',
 #                         set_error_value=("nan","nan"),
                         )

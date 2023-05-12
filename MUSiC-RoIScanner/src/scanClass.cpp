@@ -104,6 +104,7 @@ int main(int argc, char *argv[])
     // Check if input contains data info ( we don't want to perform pseudo scan)
     if (scanner.isDataScan())
     {
+        throw std::runtime_error("STOP HERE THIS IS NOT DATA?"); //DEBUG LUCAS 
         scanner.findRoI();
     }
     else

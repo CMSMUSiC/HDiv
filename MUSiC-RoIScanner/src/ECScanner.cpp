@@ -324,6 +324,7 @@ auto normalize(const std::vector<double> &V) -> std::vector<double>
         for (std::size_t i = 0; i < V.size(); i++)
         {
         N[i] = V[i] / sum_of_elems;
+        
         }
     } 
     
@@ -331,21 +332,32 @@ auto normalize(const std::vector<double> &V) -> std::vector<double>
     return N;
 }
 
-auto kl_div(const std::vector<double> &P, const std::vector<double> &Q) -> double
+auto ECScanner::kl_div(const std::vector<double> &P, const std::vector<double> &Q, std::vector<int>  &relevant_bins) -> double
 {
     double res = 0;
-
-    for (std::size_t i = 0; i < P.size(); i++)
+    double weight = 0;
+    for (std::size_t i = 0; i < relevant_bins.size(); i++)
     {
         if (P[i] != 0)
-        {
-            res += P[i] * log2(P[i] / Q[i]);
-        }
+        {   
+            
+            if((m_mcBins.at(relevant_bins[i]).getTotalMcUncert()) != 0 && (m_mcBins.at(relevant_bins[i]).getTotalMcEvents() != 0))
+            {
+                weight =  m_mcBins.at(relevant_bins[i]).getTotalMcEvents() / m_mcBins.at(relevant_bins[i]).getTotalMcUncert()  ;
+            }
+            else 
+            {
+                weight = 1e-8;
+            }
+            //m_mcBins.at(relevant_bins[i]).getTotalMcUncert() / ;
+            res += P[i] * log2(P[i] / Q[i]) * exp(-1*pow(weight,2)) ;
+        }    
+
     }
     return res;
 }
 
-auto ECScanner::get_js_distance(std::vector<double> &data, std::vector<double> &ref_model) -> double
+auto ECScanner::get_js_distance(std::vector<double> &data, std::vector<double> &ref_model, std::vector<int>  &relevant_bins) -> double
 {
     std::vector<double> M(data.size(), 0);
     std::vector<double> data_norm(data.size(), 0);
@@ -378,44 +390,53 @@ auto ECScanner::get_js_distance(std::vector<double> &data, std::vector<double> &
         M[i] = 0.5 * (data_norm[i] + ref_model_norm[i]);
     }
 
-    return sqrt(0.5 * (kl_div(data_norm, M) + kl_div(ref_model_norm, M)));
+    return sqrt(0.5 * (kl_div(data_norm, M,relevant_bins) + kl_div(ref_model_norm, M,relevant_bins)));
 }
 
 void ECScanner::findJSDistance()
 {
     // build ref_model vector
     std::vector<double> ref_model_histogram;
-    std::fstream myfile ("example.txt");
+    // build data vector
+    std::vector<double> data_histograms;
+    std::vector<int>  relevant_bins;
 
-    myfile << "[";
     for (std::size_t i = 0; i < m_mcBins.size(); i++)
     {
-        ref_model_histogram.push_back(m_mcBins.at(i).getTotalMcEvents());
-        myfile << m_mcBins.at(i).getTotalMcEvents();
-        myfile << ",";
+        if(abs(m_mcBins.at(i).getTotalMcEvents() - m_dataBins.at(i)) >= ( 0.5*abs(m_mcBins.at(i).getTotalMcUncert())) )
+        {
+            if( (m_mcBins.at(i).getTotalMcEvents() != 0) || (m_dataBins.at(i) != 0) ) 
+            {
+                if(abs(0.3 * m_mcBins.at(i).getTotalMcEvents() >= abs(m_mcBins.at(i).getTotalMcUncert())))
+                {
+                    ref_model_histogram.push_back(m_mcBins.at(i).getTotalMcEvents());
+                    data_histograms.push_back(m_dataBins.at(i));
+                    relevant_bins.push_back(i);
+                }    
+            }    
+        }    
     }
-    myfile << "]" << std::endl; 
-    // build data vector
-    myfile << "[";
-    std::vector<double> data_histograms;
-    //std::cout << "---- Music Toys -----" << std::endl;
-    for (std::size_t i = 0; i < m_dataBins.size(); i++)
+    if(ref_model_histogram.size()<2)
     {
-        data_histograms.push_back(m_dataBins.at(i));
-        myfile << m_dataBins.at(i);
-        myfile << ",";
+        m_scanResults.at(m_scanResults.size() - 1).add_js_distance(0);
     }
-    myfile << "]" << std::endl; 
+    else
+    {
+    auto js_distance = get_js_distance(ref_model_histogram, data_histograms,relevant_bins);
+
+    // update scan result
+    m_scanResults.at(m_scanResults.size() - 1).add_js_distance(js_distance);
+
+    }
+
+    
+    //std::cout << "---- Music Toys -----" << std::endl;
     // for(auto && v:data_histograms){
     //     std::cout << v << "," ;
 
     // }
     //std::cout << std::endl;
-    myfile.close();
-    auto js_distance = get_js_distance(ref_model_histogram, data_histograms);
-
-    // update scan result
-    m_scanResults.at(m_scanResults.size() - 1).add_js_distance(js_distance);
+    
 }
 
 //// Function to determine if a region should be skipped for scoreFunction
@@ -638,6 +659,25 @@ MCBin ECScanner::constructNeighborhood(
 //
 void ECScanner::findRoI()
 {
+
+    std::ofstream outputfile("Output.txt",std::ios::app);
+
+    outputfile << "----\t BKG: \t ----" << std::endl;
+    for (std::size_t i = 0; i < m_mcBins.size(); i++)
+    {
+        outputfile << m_mcBins.at(i).getTotalMcEvents()  << " ± " << m_mcBins.at(i).getTotalMcUncert() <<",";
+    }
+    outputfile << std::endl;
+
+
+    outputfile << "----\t DATA: \t ----" << std::endl;
+    for (std::size_t i = 0; i < m_dataBins.size(); i++)
+    {
+        outputfile << m_dataBins.at(i) << ",";
+    }
+    outputfile << std::endl;
+    outputfile.close();
+
     findRoI(m_scoreFunc, m_doFilter);
     findJSDistance();
 }
@@ -657,7 +697,7 @@ double ECScanner::calcPvalMUSiC(const MCBin &bin, const double data) const
     {
         // Set the value at  1e-8 (a little more than 5 sigma), because
         // our assumptions might not be valid below there.
-       // p = 1e-8;
+        p = 1e-8;
     }
 
     if (not m_skipLookupTable)

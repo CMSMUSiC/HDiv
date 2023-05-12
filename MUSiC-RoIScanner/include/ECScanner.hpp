@@ -52,7 +52,8 @@ class ECScanner
     void diceMcPseudoData(const unsigned int round);
     void diceSignalPseudoData(const unsigned int round);
 
-    auto get_js_distance(std::vector<double> &data, std::vector<double> &ref_model) -> double;
+    auto kl_div(const std::vector<double> &P, const std::vector<double> &Q, std::vector<int>  &relevant_bins) -> double;
+    auto get_js_distance(std::vector<double> &data, std::vector<double> &ref_model, std::vector<int>  &relevant_bins) -> double;
 
     void findRoI();
     void findRoI(const std::string scoreType, const bool filtered);

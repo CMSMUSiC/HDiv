@@ -31,7 +31,8 @@ JSON_DEFAULTS = dict(allow_nan=False, indent=2)
 # Create a container class for the MCBin.
 MCBin = collections.namedtuple(
     "MCBin",
-    (
+    (   
+        "mcStatUncertPerProcessGroup",
         "mcEventsPerProcessGroup",
         "lowerEdge",
         "width",
@@ -152,11 +153,12 @@ def _hists2bins( mc_hists, uncertainty_hists, unweighted_hists, scan_key=""):
         mcEventsPerProcessGroup = collections.OrderedDict()
         mcStatUncertPerProcessGroup = collections.OrderedDict()
         mcEventsPerProcessGroup = 0
+        mcStatUncertPerProcessGroup = 0
         for process_name, process_hist in mc_hists.items():
             assert process_hist.GetBinLowEdge(ibin) == lowerEdge
             assert process_hist.GetBinWidth(ibin) == width
             mcEventsPerProcessGroup = mcEventsPerProcessGroup +process_hist.GetBinContent(ibin)
-            mcStatUncertPerProcessGroup[process_name] = process_hist.GetBinError(ibin)
+            mcStatUncertPerProcessGroup= mcStatUncertPerProcessGroup + process_hist.GetBinError(ibin)
         if "ReduceAllSyst" in scan_key:
             logger.info("Reducing all systs to 50%")
         mcSysUncerts = collections.OrderedDict()
@@ -174,6 +176,7 @@ def _hists2bins( mc_hists, uncertainty_hists, unweighted_hists, scan_key=""):
 
         bins.append(
             MCBin(
+                mcStatUncertPerProcessGroup = mcStatUncertPerProcessGroup,
                 mcEventsPerProcessGroup=mcEventsPerProcessGroup,
                 lowerEdge=lowerEdge,
                 width=width,
@@ -203,12 +206,12 @@ def main():
     
     inputs_signal = []
     inputs_background = []
-    mc_name = "Rec_2Ele_1bJet_1MET"
+    mc_name = "Rec_1Ele+X"
     ec_name = mc_name
     inputs_signal.append((ec_name,n_rounds,mc_root_file_name,signal_file_name,True))
     inputs_background.append((ec_name,n_toys,mc_root_file_name,signal_file_name,False))
 
-    distribution = "InvMass"
+    distribution = "SumPt"
 
     minRegionWidth = 1
 
@@ -243,10 +246,9 @@ def main():
 
     bins.append(bins[-1]+MCBINS[-1]["width"])
     plt.hist(bins[:-1], bins, weights=Values,alpha = 0.5)
-    plt.xlim(0,3000)
     print(bins)
     print(Values)
-    plt.ylim(0.001,np.max(np.array(Values)) * 1.1)
+    plt.ylim(0.01,np.max(np.array(Values) * 1.3))
     bins_data = []
     Values = []
     for i in range(len(SignalBins)):
@@ -254,10 +256,10 @@ def main():
         Values.append(SignalBins[i]["mcEventsPerProcessGroup"])
 
     plt.scatter(bins_data,Values,color="black",s=6)
-    plt.xlim(1,10000)
+    plt.xlim(1,100)
     
     plt.yscale("log")
-    plt.xscale("log")
+    #plt.xscale("lin")
     plt.xlabel("Energy [GEV]")
     plt.ylabel("Number of Events")
     plt.legend(["Signal","Background"])
