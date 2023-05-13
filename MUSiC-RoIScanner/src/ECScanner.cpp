@@ -4,8 +4,8 @@
 
 #include "fmt/format.h"
 
-#include <iostream>
 #include <fstream>
+#include <iostream>
 
 #include <algorithm>
 #include <cmath>
@@ -29,7 +29,6 @@
 #include "writer.h"
 
 #include "ConvolutionComputer.hpp"
-
 
 namespace rs = rapidjson;
 namespace ph = std::placeholders;
@@ -316,71 +315,72 @@ auto normalize(const std::vector<double> &V) -> std::vector<double>
         std::cout << V[i] << ",";
     }
     std::cout << std::endl;
-    double sum_of_elems = std::accumulate(V.begin(),
-                                          V.end(),
-                                          decltype(N)::value_type(0));
+    double sum_of_elems = std::accumulate(V.begin(), V.end(), decltype(N)::value_type(0));
     std::cout << "Sum Of elements: " << sum_of_elems << std::endl;
-    if(sum_of_elems != 0){
+    if (sum_of_elems != 0)
+    {
         for (std::size_t i = 0; i < V.size(); i++)
         {
-        N[i] = V[i] / sum_of_elems;
-        
+            N[i] = V[i] / sum_of_elems;
         }
-    } 
-    
+    }
 
     return N;
 }
 
-auto ECScanner::kl_div(const std::vector<double> &P, const std::vector<double> &Q, std::vector<int>  &relevant_bins) -> double
+auto ECScanner::kl_div(const std::vector<double> &P, const std::vector<double> &Q, std::vector<int> &relevant_bins)
+    -> double
 {
     double res = 0;
     double weight = 0;
     for (std::size_t i = 0; i < relevant_bins.size(); i++)
     {
         if (P[i] != 0)
-        {   
-            
-            if((m_mcBins.at(relevant_bins[i]).getTotalMcUncert()) != 0 && (m_mcBins.at(relevant_bins[i]).getTotalMcEvents() != 0))
+        {
+
+            if ((m_mcBins.at(relevant_bins[i]).getTotalMcUncert()) != 0 &&
+                (m_mcBins.at(relevant_bins[i]).getTotalMcEvents() != 0))
             {
-                weight =  m_mcBins.at(relevant_bins[i]).getTotalMcEvents() / m_mcBins.at(relevant_bins[i]).getTotalMcUncert()  ;
+                weight =
+                    m_mcBins.at(relevant_bins[i]).getTotalMcEvents() / m_mcBins.at(relevant_bins[i]).getTotalMcUncert();
             }
-            else 
+            else
             {
                 weight = 1e-8;
             }
-            //m_mcBins.at(relevant_bins[i]).getTotalMcUncert() / ;
-            res += P[i] * log2(P[i] / Q[i]) * exp(-1*pow(weight,2)) ;
-        }    
-
+            // m_mcBins.at(relevant_bins[i]).getTotalMcUncert() / ;
+            res += P[i] * log2(P[i] / Q[i]) * exp(-1 * pow(weight, 2));
+        }
     }
     return res;
 }
 
-auto ECScanner::get_js_distance(std::vector<double> &data, std::vector<double> &ref_model, std::vector<int>  &relevant_bins) -> double
+auto ECScanner::get_js_distance(std::vector<double> &data,
+                                std::vector<double> &ref_model,
+                                std::vector<int> &relevant_bins) -> double
 {
     std::vector<double> M(data.size(), 0);
     std::vector<double> data_norm(data.size(), 0);
     std::vector<double> ref_model_norm(data.size(), 0);
-    //DEBUG LUCAS
+    // DEBUG LUCAS
     for (std::size_t i = 0; i < data.size(); i++)
     {
-        //std::cout << "Data: ";
-        //std::cout << data[i] << "," ;
+        // std::cout << "Data: ";
+        // std::cout << data[i] << "," ;
         if (data[i] < 0)
         {
             std::cout << "Negative Value in data " << data[i] << " has been changed to 0" << std::endl;
             data[i] = 0;
         }
-        //std::cout << std::endl;
-        //std::cout << "refmodel: ";
-        std::cout << ref_model[i] << "," ;
+        // std::cout << std::endl;
+        // std::cout << "refmodel: ";
+        std::cout << ref_model[i] << ",";
         if (ref_model[i] < 0)
         {
             std::cout << "Negative Value in data " << ref_model[i] << " has been changed to 0" << std::endl;
             ref_model[i] = 0;
         }
-        //std::cout << std::endl;
+        // std::cout << std::endl;
     }
     data_norm = normalize(data);
     ref_model_norm = normalize(ref_model);
@@ -390,53 +390,45 @@ auto ECScanner::get_js_distance(std::vector<double> &data, std::vector<double> &
         M[i] = 0.5 * (data_norm[i] + ref_model_norm[i]);
     }
 
-    return sqrt(0.5 * (kl_div(data_norm, M,relevant_bins) + kl_div(ref_model_norm, M,relevant_bins)));
+    return sqrt(0.5 * (kl_div(data_norm, M, relevant_bins) + kl_div(ref_model_norm, M, relevant_bins)));
 }
 
 void ECScanner::findJSDistance()
 {
     // build ref_model vector
     std::vector<double> ref_model_histogram;
+
     // build data vector
     std::vector<double> data_histograms;
-    std::vector<int>  relevant_bins;
+    std::vector<int> relevant_bins;
 
     for (std::size_t i = 0; i < m_mcBins.size(); i++)
     {
-        if(abs(m_mcBins.at(i).getTotalMcEvents() - m_dataBins.at(i)) >= ( 0.5*abs(m_mcBins.at(i).getTotalMcUncert())) )
+        if (abs(m_mcBins.at(i).getTotalMcEvents() - m_dataBins.at(i)) >= (0.5 * abs(m_mcBins.at(i).getTotalMcUncert())))
         {
-            if( (m_mcBins.at(i).getTotalMcEvents() != 0) || (m_dataBins.at(i) != 0) ) 
-            {
-                if(abs(0.3 * m_mcBins.at(i).getTotalMcEvents() >= abs(m_mcBins.at(i).getTotalMcUncert())))
-                {
-                    ref_model_histogram.push_back(m_mcBins.at(i).getTotalMcEvents());
-                    data_histograms.push_back(m_dataBins.at(i));
-                    relevant_bins.push_back(i);
-                }    
-            }    
-        }    
+            // if ((m_mcBins.at(i).getTotalMcEvents() != 0) || (m_dataBins.at(i) != 0))
+            // {
+            // if (abs(0.3 * m_mcBins.at(i).getTotalMcEvents() >= abs(m_mcBins.at(i).getTotalMcUncert())))
+            // {
+            ref_model_histogram.push_back(m_mcBins.at(i).getTotalMcEvents());
+            data_histograms.push_back(m_dataBins.at(i));
+            relevant_bins.push_back(i);
+            // }
+            // }
+        }
     }
-    if(ref_model_histogram.size()<2)
+
+    if (ref_model_histogram.size() < 2)
     {
         m_scanResults.at(m_scanResults.size() - 1).add_js_distance(0);
     }
     else
     {
-    auto js_distance = get_js_distance(ref_model_histogram, data_histograms,relevant_bins);
+        auto js_distance = get_js_distance(ref_model_histogram, data_histograms, relevant_bins);
 
-    // update scan result
-    m_scanResults.at(m_scanResults.size() - 1).add_js_distance(js_distance);
-
+        // update scan result
+        m_scanResults.at(m_scanResults.size() - 1).add_js_distance(js_distance);
     }
-
-    
-    //std::cout << "---- Music Toys -----" << std::endl;
-    // for(auto && v:data_histograms){
-    //     std::cout << v << "," ;
-
-    // }
-    //std::cout << std::endl;
-    
 }
 
 //// Function to determine if a region should be skipped for scoreFunction
@@ -464,16 +456,17 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
         fillRegionControlPlot(mcbin, SkipReason::EMPTY_BIN);
         return true;
     }
-    // fmt::print("Passei por aqui ... 1\n");
+
+    // nothing (no MC, no data)
+    // not a valid region
     if (data < no_data_threshold and mcbin.isEmpty())
-    { // nothing (no MC, no data)
-        // not a valid region
+    {
         m_regionStatistics["skip: empty"]++;
         fillRegionControlPlot(mcbin, SkipReason::EMPTY_REGION);
         return true;
     }
 
-    // fmt::print("Passei por aqui ... 2\n");
+    // Region with data but without MC
     if (data > no_data_threshold and mcbin.isEmpty())
     {
         std::cerr << "Warning: Region with data but without MC!" << std::endl;
@@ -482,18 +475,18 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
         fillRegionControlPlot(mcbin, SkipReason::DATA_NO_MC);
         return true;
     }
-    // fmt::print("Passei por aqui ... 3\n");
 
+    //
     const double n_mc = mcbin.getTotalMcEvents();
-    const double relative_uncert = std::abs(mcbin.getTotalMcUncert() / n_mc);
 
+    // small mc bins
     if (n_mc < m_thresholdRegionYield)
     {
         fillRegionControlPlot(mcbin, SkipReason::LOW_MC_YIELD);
         return true;
     }
-    // fmt::print("Passei por aqui ... 4\n");
 
+    // don't think it is being used
     if (data < no_data_threshold and not mcbin.isEmpty() and
         (std::abs(n_mc / mcbin.getTotalMcStatUncert()) < m_coverageThreshold))
     {
@@ -501,16 +494,16 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
         fillRegionControlPlot(mcbin, SkipReason::MC_NO_DATA);
         return true;
     }
-    // fmt::print("Passei por aqui ... 5\n");
 
+    // adaptative coverage - too high uncert
+    const double relative_uncert = std::abs(mcbin.getTotalMcUncert() / n_mc);
     const double adaptive_coverage_threshold = std::min(1.0, std::max(1.2 * std::pow(n_mc, -0.2), 0.5));
     if (relative_uncert > adaptive_coverage_threshold)
-    { // too high uncert
+    {
         m_regionStatistics["skip: adaptive coverage"]++;
         fillRegionControlPlot(mcbin, SkipReason::HIGH_REL_UNCERT);
         return true;
     }
-    // fmt::print("Passei por aqui ... 6\n");
 
     // too insignificant for a full p-value calculation
     if (!isIntegral && std::abs(data - n_mc) / mcbin.getTotalMcUncert() < m_sigmaThreshold)
@@ -519,16 +512,16 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
         fillRegionControlPlot(mcbin, SkipReason::SIGMA_THRESHOLD);
         return true;
     }
-    // fmt::print("Passei por aqui ... 7\n");
 
+    // negative MC bins
     if (n_mc <= 0.)
     {
         m_regionStatistics["skip: negative MC"]++;
         fillRegionControlPlot(mcbin, SkipReason::MC_NEGATIVE);
         return true;
     }
-    // fmt::print("Passei por aqui ... 8\n");
 
+    // too many negative contributions from different processes
     const double threshold = -0.02 * n_mc;
     for (const double yield : mcbin.mcEventsPerProcessGroup)
     {
@@ -539,10 +532,9 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
             return true;
         }
     }
-    // fmt::print("Passei por aqui ... 9\n");
 
     // Low-Statistics treatment as presented to EXO on 20. Jan 2016
-
+    // relative statistical uncertanty < 0.6 --> VETO
     if (not m_noLowStatsTreatment)
     {
         if (mcbin.getTotalMcStatUncert() / mcbin.getTotalMcEvents() > m_thresholdLowStatsUncert)
@@ -552,7 +544,6 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
             return true;
         }
     }
-    // fmt::print("Passei por aqui ... 10\n");
 
     // Neighborhood-based low stats vetos:
     std::vector<size_t> leadingBackgroundsNeighborhood;
@@ -619,7 +610,6 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
             }
         }
     }
-    // fmt::print("Passei por aqui ... 11\n");
 
     // no reason to skip region
     return false;
@@ -660,15 +650,14 @@ MCBin ECScanner::constructNeighborhood(
 void ECScanner::findRoI()
 {
 
-    std::ofstream outputfile("Output.txt",std::ios::app);
+    std::ofstream outputfile("Output.txt", std::ios::app);
 
     outputfile << "----\t BKG: \t ----" << std::endl;
     for (std::size_t i = 0; i < m_mcBins.size(); i++)
     {
-        outputfile << m_mcBins.at(i).getTotalMcEvents()  << " ± " << m_mcBins.at(i).getTotalMcUncert() <<",";
+        outputfile << m_mcBins.at(i).getTotalMcEvents() << " ± " << m_mcBins.at(i).getTotalMcUncert() << ",";
     }
     outputfile << std::endl;
-
 
     outputfile << "----\t DATA: \t ----" << std::endl;
     for (std::size_t i = 0; i < m_dataBins.size(); i++)

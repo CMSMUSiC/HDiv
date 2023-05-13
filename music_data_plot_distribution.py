@@ -11,10 +11,10 @@ import os
 import logging
 import time
 import resource as rs
-from parallelbar import progress_imap,progress_map
+from parallelbar import progress_imap, progress_map
 import sys
 from multiprocessing import Pool
-import tqdm 
+import tqdm
 import csv
 import matplotlib as mpl
 import matplotlib.pyplot as plt
@@ -31,7 +31,7 @@ JSON_DEFAULTS = dict(allow_nan=False, indent=2)
 # Create a container class for the MCBin.
 MCBin = collections.namedtuple(
     "MCBin",
-    (   
+    (
         "mcStatUncertPerProcessGroup",
         "mcEventsPerProcessGroup",
         "lowerEdge",
@@ -139,7 +139,7 @@ def _extract_histograms(event_class, distribution):
     return unweighted_hists
 
 
-def _hists2bins( mc_hists, uncertainty_hists, unweighted_hists, scan_key=""):
+def _hists2bins(mc_hists, uncertainty_hists, unweighted_hists, scan_key=""):
     assert len(mc_hists) > 0
 
     bins = []
@@ -157,8 +157,12 @@ def _hists2bins( mc_hists, uncertainty_hists, unweighted_hists, scan_key=""):
         for process_name, process_hist in mc_hists.items():
             assert process_hist.GetBinLowEdge(ibin) == lowerEdge
             assert process_hist.GetBinWidth(ibin) == width
-            mcEventsPerProcessGroup = mcEventsPerProcessGroup +process_hist.GetBinContent(ibin)
-            mcStatUncertPerProcessGroup= mcStatUncertPerProcessGroup + process_hist.GetBinError(ibin)
+            mcEventsPerProcessGroup = (
+                mcEventsPerProcessGroup + process_hist.GetBinContent(ibin)
+            )
+            mcStatUncertPerProcessGroup = (
+                mcStatUncertPerProcessGroup + process_hist.GetBinError(ibin)
+            )
         if "ReduceAllSyst" in scan_key:
             logger.info("Reducing all systs to 50%")
         mcSysUncerts = collections.OrderedDict()
@@ -176,7 +180,7 @@ def _hists2bins( mc_hists, uncertainty_hists, unweighted_hists, scan_key=""):
 
         bins.append(
             MCBin(
-                mcStatUncertPerProcessGroup = mcStatUncertPerProcessGroup,
+                mcStatUncertPerProcessGroup=mcStatUncertPerProcessGroup,
                 mcEventsPerProcessGroup=mcEventsPerProcessGroup,
                 lowerEdge=lowerEdge,
                 width=width,
@@ -186,86 +190,77 @@ def _hists2bins( mc_hists, uncertainty_hists, unweighted_hists, scan_key=""):
     return bins
 
 
-
-
-
-
 def main():
     logger = logging.getLogger("main")
     roothelpers.root_setup()
 
-    mc_root_file_name = "Build_Stage2/Lucas/bg.root"
-    signal_file_name = "Build_Stage2/Lucas/bg_2000.root"
+    mc_root_file_name = "/disk1/ykaiser/sharing/Lucas/bg.root"
+    signal_file_name = "/disk1/ykaiser/sharing/Lucas/bg_2000.root"
     mc_root_file = ROOT.TFile.Open(mc_root_file_name)
     signal_file = ROOT.TFile.Open(signal_file_name)
-    
-    n_rounds = 1  # Number of signal to Average
-    n_toys = 1             #Number of Toys
-    
 
-    
+    n_rounds = 1  # Number of signal to Average
+    n_toys = 1  # Number of Toys
+
     inputs_signal = []
     inputs_background = []
     mc_name = "Rec_1Ele+X"
     ec_name = mc_name
-    inputs_signal.append((ec_name,n_rounds,mc_root_file_name,signal_file_name,True))
-    inputs_background.append((ec_name,n_toys,mc_root_file_name,signal_file_name,False))
+    inputs_signal.append((ec_name, n_rounds, mc_root_file_name, signal_file_name, True))
+    inputs_background.append(
+        (ec_name, n_toys, mc_root_file_name, signal_file_name, False)
+    )
 
     distribution = "SumPt"
 
     minRegionWidth = 1
 
-    #First data:
+    # First data:
 
-
-        # if(not IS_SIGNAL):   
-        #    systematics = collect_systematics([ec_name], mc_root_file, signal_file=None)
+    # if(not IS_SIGNAL):
+    #    systematics = collect_systematics([ec_name], mc_root_file, signal_file=None)
 
     mc_ec = ecroot.read_ec_object(mc_root_file, ec_name)
     signal_ec = ecroot.read_ec_object(signal_file, ec_name)
 
-
     MCBINS = _flatten(
-            _extract_mc_bins(
-                mc_ec, distribution=distribution, filter_systematics=None, scan_key=""
-            )
-        )    
-
+        _extract_mc_bins(
+            mc_ec, distribution=distribution, filter_systematics=None, scan_key=""
+        )
+    )
 
     SignalBins = _flatten(
-                _extract_mc_bins(
-                signal_ec, distribution, filter_systematics=None, scan_key=""
-                )
-                )
-   
+        _extract_mc_bins(signal_ec, distribution, filter_systematics=None, scan_key="")
+    )
+
     bins = []
     Values = []
     for i in range(len(MCBINS)):
         bins.append(MCBINS[i]["lowerEdge"])
         Values.append(MCBINS[i]["mcEventsPerProcessGroup"])
 
-    bins.append(bins[-1]+MCBINS[-1]["width"])
-    plt.hist(bins[:-1], bins, weights=Values,alpha = 0.5)
+    bins.append(bins[-1] + MCBINS[-1]["width"])
+    plt.hist(bins[:-1], bins, weights=Values, alpha=0.5)
     print(bins)
     print(Values)
-    plt.ylim(0.01,np.max(np.array(Values) * 1.3))
+    plt.ylim(0.01, np.max(np.array(Values) * 1.3))
     bins_data = []
     Values = []
     for i in range(len(SignalBins)):
-        bins_data.append(bins[i]+0.5*MCBINS[i]["width"])
+        bins_data.append(bins[i] + 0.5 * MCBINS[i]["width"])
         Values.append(SignalBins[i]["mcEventsPerProcessGroup"])
 
-    plt.scatter(bins_data,Values,color="black",s=6)
-    plt.xlim(1,100)
-    
+    plt.scatter(bins_data, Values, color="black", s=6)
+    plt.xlim(1, 100)
+
     plt.yscale("log")
-    #plt.xscale("lin")
+    # plt.xscale("lin")
     plt.xlabel("Energy [GEV]")
     plt.ylabel("Number of Events")
-    plt.legend(["Signal","Background"])
-    plt.savefig("DEBUG/" + ec_name +"_distibution.png")
+    plt.legend(["Signal", "Background"])
+    plt.savefig("DEBUG/" + ec_name + "_distibution.png")
     print(Values)
 
-            
+
 if __name__ == "__main__":
     main()
