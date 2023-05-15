@@ -566,7 +566,7 @@ bool ECScanner::vetoRegion(const MCBin &mcbin,
     // filter bins with too high uncert
     if (is_js_veto)
     {
-        if (mcbin.getTotalMcUncert() / mcbin.getTotalMcEvents() > .7)
+        if (mcbin.getTotalMcUncert() / mcbin.getTotalMcEvents() > 999999999.)
         {
             return true;
         }
