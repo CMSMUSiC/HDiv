@@ -270,7 +270,10 @@ double integration_payload_lognormal(double x, void *par_tmp)
 }
 
 // "main"-function of this module. computes the MUSiC p-value associated with N_obs, N_SM and sigma_MC
-double compute_p_convolution(const double N_obs, const double N_SM, const double sigma_MC, PriorMode prior,
+double compute_p_convolution(const double N_obs,
+                             const double N_SM,
+                             const double sigma_MC,
+                             PriorMode prior,
                              const int debugLevel)
 {
     if (debugLevel > 2)
@@ -344,32 +347,32 @@ double compute_p_convolution(const double N_obs, const double N_SM, const double
     // Check sanity.
     if (lower > upper or lower == upper)
     {
-        if (debugLevel > 0)
-        {
-            std::stringstream warn;
-            warn << "[WARNING] ConvolutionComputer_add:" << std::endl;
-            warn << "    Lower integration bound >= upper bound!" << std::endl;
-            warn << "    lower = " << lower << std::endl;
-            warn << "    upper = " << upper << std::endl;
+        // if (debugLevel > 0)
+        // {
+        //     std::stringstream warn;
+        //     warn << "[WARNING] ConvolutionComputer_add:" << std::endl;
+        //     warn << "    Lower integration bound >= upper bound!" << std::endl;
+        //     warn << "    lower = " << lower << std::endl;
+        //     warn << "    upper = " << upper << std::endl;
 
-            warn << "General information:" << std::endl;
-            warn << "    N_obs = " << N_obs << std::endl;
-            warn << "    N_SM  = " << N_SM << std::endl;
-            warn << "    sigma_MC = " << sigma_MC << std::endl;
+        //     warn << "General information:" << std::endl;
+        //     warn << "    N_obs = " << N_obs << std::endl;
+        //     warn << "    N_SM  = " << N_SM << std::endl;
+        //     warn << "    sigma_MC = " << sigma_MC << std::endl;
 
-            warn << "Peak information:" << std::endl;
-            warn << "    peak       = " << peak << std::endl;
-            warn << "    peak_lower = " << peak_lower << std::endl;
-            warn << "    peak_upper = " << peak_upper << std::endl;
+        //     warn << "Peak information:" << std::endl;
+        //     warn << "    peak       = " << peak << std::endl;
+        //     warn << "    peak_lower = " << peak_lower << std::endl;
+        //     warn << "    peak_upper = " << peak_upper << std::endl;
 
-            warn << "Gaussian integration limits:" << std::endl;
-            warn << "    g_lower = " << g_lower << std::endl;
-            warn << "    g_upper = " << g_upper << std::endl;
+        //     warn << "Gaussian integration limits:" << std::endl;
+        //     warn << "    g_lower = " << g_lower << std::endl;
+        //     warn << "    g_upper = " << g_upper << std::endl;
 
-            warn << "p-value set to -1!" << std::endl;
+        //     warn << "p-value set to -1!" << std::endl;
 
-            std::cerr << warn.str();
-        }
+        //     std::cerr << warn.str();
+        // }
         return -1.;
     }
 
@@ -425,8 +428,16 @@ double compute_p_convolution(const double N_obs, const double N_SM, const double
 
     // and now integrate
     double convolution = 0, conv_error = 0;
-    const int ret_code = gsl_integration_qag(&gsl_func, lower, upper, abs_precision, rel_precision, max_points,
-                                             GSL_INTEG_GAUSS15, gsl_int_ws, &convolution, &conv_error);
+    const int ret_code = gsl_integration_qag(&gsl_func,
+                                             lower,
+                                             upper,
+                                             abs_precision,
+                                             rel_precision,
+                                             max_points,
+                                             GSL_INTEG_GAUSS15,
+                                             gsl_int_ws,
+                                             &convolution,
+                                             &conv_error);
 
     if (debugLevel > 2)
     {

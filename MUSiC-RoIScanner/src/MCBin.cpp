@@ -7,6 +7,8 @@
 #include <stdlib.h>
 #include <string>
 
+#include "fmt/format.h"
+
 using namespace std;
 
 MCBin::MCBin()
@@ -68,12 +70,6 @@ MCBin &MCBin::operator+=(const MCBin &add)
         return *this;
     }
 
-    //Improvised Fix for binnign test // DEBUG - Lucas
-    /*f( (lowerEdge + width >= add.lowerEdge -0.0001) and (lowerEdge + width <= add.lowerEdge + 0.0001) )
-    {
-        lowerEdge -= 0.0001;
-    }*/
-
     // recalculate bin borders and check if they match
     if ((lowerEdge < add.lowerEdge and ((lowerEdge + width) > add.lowerEdge)) or
         (lowerEdge > add.lowerEdge and ((add.lowerEdge + add.width) > lowerEdge)))
@@ -132,14 +128,12 @@ bool MCBin::operator!=(const MCBin &comp) const
 
 ostream &operator<<(ostream &out, const MCBin &bin)
 {
-    // DEBUG LUCAS
-    /*
     out << "MCBin(" << bin.lowerEdge << ", " << (bin.lowerEdge + bin.width) << ")" << std::endl;
     out << "Events: " << bin.getTotalMcEvents() << " +/- " << bin.getTotalMcStatUncert() << std::endl;
     out << "Processes: " << std::endl;
     for (size_t i = 0; i < bin.mcEventsPerProcessGroup.size(); i++)
     {
-        out << "\t" << bin.mcProcessGroupNames[i] << ": ";
+        out << "\t" << bin.mcProcessGroupNames.at(i) << ": ";
         out << bin.mcEventsPerProcessGroup[i] << " +/- " << bin.mcStatUncertPerProcessGroup[i] << std::endl;
     }
     out << "Uncertainties: " << std::endl;
@@ -156,7 +150,7 @@ ostream &operator<<(ostream &out, const MCBin &bin)
         {
             out << " " << error.first << " - " << error.second << std::endl;
         }
-    }*/
+    }
     return out;
 }
 
@@ -178,7 +172,7 @@ double MCBin::getTotalMcUncert() const
     {
         totalUncertCache = sqrt(pow(getTotalMcStatUncert(), 2) + pow(getTotalMcSystUncert(), 2));
     }
-    //DEBUG LUCAS
+    // DEBUG LUCAS
     return totalUncertCache;
 }
 

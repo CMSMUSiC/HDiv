@@ -52,8 +52,10 @@ class ECScanner
     void diceMcPseudoData(const unsigned int round);
     void diceSignalPseudoData(const unsigned int round);
 
-    auto kl_div(const std::vector<double> &P, const std::vector<double> &Q, std::vector<int>  &relevant_bins) -> double;
-    auto get_js_distance(std::vector<double> &data, std::vector<double> &ref_model, std::vector<int>  &relevant_bins) -> double;
+    auto kl_div(const std::vector<double> &P, const std::vector<double> &Q) -> double;
+    auto get_js_distance(const std::vector<double> &data,
+                         const std::vector<double> &ref_model,
+                         const std::vector<double> &ref_model_unc = {}) -> double;
 
     void findRoI();
     void findRoI(const std::string scoreType, const bool filtered);
@@ -103,7 +105,8 @@ class ECScanner
                     std::vector<double>::iterator const &startDataBinIter,
                     std::vector<double>::iterator const &endDataBinIter,
                     std::vector<MCBin>::iterator const &maxMCBinIter,
-                    bool isIntegral = false);
+                    bool isIntegral = false,
+                    bool is_js_veto = false);
 
     template <typename T>
     void checkAndSetConfig(const std::string name, T &config);
