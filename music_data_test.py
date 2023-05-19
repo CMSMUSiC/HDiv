@@ -286,7 +286,7 @@ def _hists2bins(mc_hists, uncertainty_hists, unweighted_hists, scan_key=""):
 def calculation(
     ec_name, n_rounds, mc_root_file_name, signal_file_name, IS_SIGNAL=False
 ):
-    
+
     # Sleep for a while in order to not overlaod ROOT global states and memory access
     # (I have no clue at all if it makes any sense ...)
     # print(f"Sleeping [{ec_name}] ...")
@@ -444,7 +444,6 @@ def main():
     os.system("rm -rf DEBUG/*")
 
     os.system("rm -rf logs ; mkdir logs")
-    
 
     n_toys = 1000  # Number of Toys
     n_rounds = 200  # Number of signal to Average
@@ -452,10 +451,10 @@ def main():
     # Open the ROOT file and loop over all objects
     mc_root_file_name = "/disk1/ykaiser/sharing/Lucas/bg.root"
     mc_root_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg.root")
-    signal_file_name = "/disk1/ykaiser/sharing/Lucas/bg_2000.root"
-    signal_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg_2000.root")
-    # signal_file_name = "/disk1/ykaiser/sharing/Lucas/bg.root"
-    # signal_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg.root")
+    # signal_file_name = "/disk1/ykaiser/sharing/Lucas/bg_2000.root"
+    # signal_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg_2000.root")
+    signal_file_name = "/disk1/ykaiser/sharing/Lucas/bg.root"
+    signal_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg.root")
 
     signal_names = [key.GetName() for key in signal_file.GetListOfKeys()]
     mc_names = [key.GetName() for key in mc_root_file.GetListOfKeys()]

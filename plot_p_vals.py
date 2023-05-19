@@ -7,6 +7,7 @@ import os
 import csv
 import numpy as np
 import ROOT
+
 hep.style.use(hep.style.ROOT)
 # mpl.use("Agg")
 
@@ -36,7 +37,8 @@ def read_outputs_js(file_path):
             scores.append(float(row["js_distance"]))
     return scores
 
-#norm = plt.Normalize(np.min(np.array(sf)), np.max(np.array(sf)))
+
+# norm = plt.Normalize(np.min(np.array(sf)), np.max(np.array(sf)))
 sig_fractions = []
 P_music = {}
 JS = {}
@@ -76,15 +78,9 @@ for ec_name in event_classes.keys():
                 np.sum(np.array(p_toys_js) >= p_signal_js) / float(len(p_toys_js)),
             )
             p_js.append(result_js)
-        
+
             # add signal fraction
             sig_fractions.append(event_classes[ec_name])
-
-
-
-
-
-
 
 
 # plt.xscale("log")
@@ -93,14 +89,22 @@ for ec_name in event_classes.keys():
 # plt.ylim(0,0.7)
 fig = plt.figure(figsize=(12, 12))
 
-gs = fig.add_gridspec(3, 2,  width_ratios=(4, 1), height_ratios=(1, 4, 0.3),
-                      left=0.1, right=0.9, bottom=0.1, top=0.9,
-                      wspace=0.05, hspace=0.3)
+gs = fig.add_gridspec(
+    3,
+    2,
+    width_ratios=(4, 1),
+    height_ratios=(1, 4, 0.3),
+    left=0.1,
+    right=0.9,
+    bottom=0.1,
+    top=0.9,
+    wspace=0.05,
+    hspace=0.3,
+)
 
 ax = fig.add_subplot(gs[1, 0])
 ax_histx = fig.add_subplot(gs[0, 0], sharex=ax)
 ax_histy = fig.add_subplot(gs[1, 1], sharey=ax)
-
 
 
 # no labels
@@ -111,32 +115,31 @@ ax_histy.tick_params(axis="y", labelleft=False)
 # cmap = mpl.cm.cool
 # cmap='Blues'
 # sct_plot = ax.scatter(p,p_js,alpha = 0.4, s=100, c=sig_fractions, cmap=cmap, edgecolor = None)
-sct_plot = ax.scatter(p,p_js,alpha = 0.3, s=100, c=sig_fractions, edgecolor = None)
+sct_plot = ax.scatter(p, p_js, alpha=0.3, s=100, c=sig_fractions, edgecolor=None)
 
-ax_histx.hist(p, bins=30, color = "tab:cyan")
-ax_histy.hist(p_js, bins=30, orientation='horizontal', color = "tab:cyan")
-ax_histx.set_yscale('log')
-ax_histy.set_xscale('log')
+ax_histx.hist(p, bins=30, color="tab:cyan")
+ax_histy.hist(p_js, bins=30, orientation="horizontal", color="tab:cyan")
+ax_histx.set_yscale("log")
+ax_histy.set_xscale("log")
 
 norm = mpl.colors.Normalize(vmin=5, vmax=10)
 color_ax = fig.add_subplot(gs[2, 0])
-fig.colorbar(sct_plot, cax=color_ax, orientation='horizontal', label='Signal Fraction')
+fig.colorbar(sct_plot, cax=color_ax, orientation="horizontal", label="Signal Fraction")
 
 ax.set_xlabel("MUSiC $\widetilde{p}$")
 ax.set_ylabel("Fast $p$-value")
 
 
-
 ax.grid()
-ax.plot([0.001,1],[0.001,1],color="black")
+ax.plot([0.001, 1], [0.001, 1], color="black")
 os.system("rm -rf Music_alt_comparison*")
 
-plt.savefig("Music_alt_comparison.jpg")
+plt.savefig("Music_alt_comparison.png")
 plt.savefig("Music_alt_comparison.pdf")
 
 
-ax.set_yscale('log')
-ax.set_xscale('log')
+ax.set_yscale("log")
+ax.set_xscale("log")
 
 plt.savefig("Music_alt_comparison_log_scale.jpg")
 plt.savefig("Music_alt_comparison_log_scale.pdf")

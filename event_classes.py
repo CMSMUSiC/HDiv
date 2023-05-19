@@ -1012,6 +1012,9 @@ if len(signal_fractions) != len(ec_names):
 
 event_classes = {}
 for idx, name in enumerate(ec_names):
-    if (name != "Rec_1Muon+X") and (("Muon" in name) or ("Ele" in name)) and not("Empty" in name):
+    if (
+        (name != "Rec_1Muon+X")
+        and (("Muon" in name) or ("Ele" in name))
+        and not ("Empty" in name)
+    ):
         event_classes[name] = signal_fractions[idx]
-
