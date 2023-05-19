@@ -283,7 +283,7 @@ void ECScanner::findRoI(const std::string scoreType, const bool filtered)
             }
         }
 
-        fmt::print("MUSiC Score: {}\n", final_score);
+        // fmt::print("MUSiC Score: {}\n", final_score);
 
         m_scanResults.push_back(final_result);
     }
@@ -358,6 +358,7 @@ auto ECScanner::kl_div(const std::vector<double> &P, const std::vector<double> &
         // }
         // m_mcBins.at(relevant_bins[i]).getTotalMcUncert() / ;
         // res += P[i] * log2(P[i] / Q[i]) * exp(-1 * pow(weight, 2));
+
         if (P[i] > 0. and Q[i] > 0.)
         {
             // res += P[i] * log2(P[i] / Q.at(i));
@@ -371,6 +372,26 @@ auto ECScanner::kl_div(const std::vector<double> &P, const std::vector<double> &
         {
             res += std::numeric_limits<double>::infinity();
         }
+    }
+
+    return res;
+}
+
+auto kl_div_element(double P, double Q) -> double
+{
+    double res = 0.;
+
+    if (P > 0. and Q > 0.)
+    {
+        res = P * log2(P / Q);
+    }
+    else if (P == 0. and Q >= 0.)
+    {
+        res = 0;
+    }
+    else
+    {
+        res = std::numeric_limits<double>::infinity();
     }
 
     return res;
@@ -402,12 +423,14 @@ auto ECScanner::get_js_distance(const std::vector<double> &data,
     // fmt::print("MC: [{}]\n", fmt::join(ref_model, ", "));
     // fmt::print("MC Uncert: [{}]\n", fmt::join(ref_model_unc, ", "));
 
-    constexpr double similarity_pressure = 1. / 8.;
+    constexpr double similarity_pressure = 1. / 2.;
     std::vector<double> weights;
     weights.reserve(data.size());
 
     std::vector<double> kernels;
     kernels.reserve(data.size());
+
+    double gamma = 50.;
 
     for (std::size_t i = 0; i < data.size(); i++)
     {
@@ -415,7 +438,7 @@ auto ECScanner::get_js_distance(const std::vector<double> &data,
         kernels.push_back(std::exp(-similarity_pressure * std::pow(pull, 2.)));
         // weights.push_back(1. / ref_model[i] / ref_model_unc[i]);
         // weights.push_back(1.);
-        weights.push_back(1. - ref_model_norm[i]);
+        weights.push_back(std::pow(1. - ref_model_norm[i], gamma));
     }
     const double sum_weights = std::accumulate(weights.cbegin(), weights.cend(), 0.);
 
@@ -423,9 +446,11 @@ auto ECScanner::get_js_distance(const std::vector<double> &data,
     for (std::size_t i = 0; i < data.size(); i++)
     {
         // res += 0.5 * weights[i] / sum_weights * (kl_div(data_norm, M) + kl_div(ref_model_norm, M));
-        // res += 0.5 * weights[i] / sum_weights * kl_div(data_norm, ref_model_norm);
+        // res += weights[i] / sum_weights * kl_div_element(data_norm[i], ref_model_norm[i]);
+        // res += 0.5 * weights[i] / sum_weights *
+        //        (kl_div_element(data_norm[i], M[i]) + kl_div_element(ref_model_norm[i], M[i]));
         // res += weights[i] / sum_weights * kl_div(data, ref_model);
-        res += weights[i] / sum_weights * kernels[i];
+        res += weights[i] / sum_weights * (1. - kernels[i]);
     }
 
     // fmt::print("--> Weights: [{}]\n\n", fmt::join(weights, ", "));
@@ -538,7 +563,7 @@ void ECScanner::findJSDistance()
     {
         auto js_distance = get_js_distance(data_histogram, ref_model_histogram, ref_model_uncert);
 
-        fmt::print("Alt Metric: {}\n", js_distance);
+        // fmt::print("Alt Metric: {}\n", js_distance);
 
         // update scan result
         m_scanResults.at(m_scanResults.size() - 1).add_js_distance(js_distance);

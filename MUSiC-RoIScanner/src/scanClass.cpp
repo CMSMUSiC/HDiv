@@ -134,14 +134,14 @@ int main(int argc, char *argv[])
                 // Dice around the signal expectation.
                 // Note that the dicing result is still scanned against the *SM* expectation,
                 // not against the signal expectation.
-                fmt::print("\n-- RoI for round (Signal): {}/{}\n", i, scanner.getDicingRounds());
+                // fmt::print("\n-- RoI for round (Signal): {}/{}\n", i, scanner.getDicingRounds());
                 scanner.diceSignalPseudoData(real_round_index);
             }
             else
             {
                 // std::cout << "---- HELLO WORLD! I AM BACKGROUND! ----" << std::endl;
                 // Dice around the SM expectation
-                fmt::print("\n-- RoI for round (Background): {}/{}\n", i, scanner.getDicingRounds());
+                // fmt::print("\n-- RoI for round (Background): {}/{}\n", i, scanner.getDicingRounds());
                 scanner.diceMcPseudoData(real_round_index);
             }
 

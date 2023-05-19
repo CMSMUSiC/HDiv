@@ -145,3 +145,4 @@ dmypy.json
 .pyre/build2
 build2
 Output.txt
+.vscode/
