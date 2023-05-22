@@ -25,6 +25,7 @@ import time
 import random
 
 from event_classes import event_classes
+from get_event_classes import get_event_classes
 
 hep.style.use(hep.style.ROOT)
 mpl.use("Agg")
@@ -301,7 +302,8 @@ def calculation(
     #########################################
     #########################################
     #########################################
-    Kin_distribution = ["InvMass", "SumPt"]
+    # Kin_distribution = ["InvMass", "SumPt"]
+    Kin_distribution = ["SumPt"]
     # Kin_distribution = ["InvMass"]
     #########################################
     #########################################
@@ -445,35 +447,28 @@ def main():
 
     os.system("rm -rf logs ; mkdir logs")
 
-    n_toys = 1000  # Number of Toys
-    n_rounds = 200  # Number of signal to Average
+    n_toys = 2  # Number of Toys
+    n_rounds = 2  # Number of signal to Average
 
     # Open the ROOT file and loop over all objects
     mc_root_file_name = "/disk1/ykaiser/sharing/Lucas/bg.root"
-    mc_root_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg.root")
+    mc_root_file = ROOT.TFile.Open(mc_root_file_name)
+
+    # signal_file_name = "/disk1/ykaiser/sharing/Lucas/bg.root"
     # signal_file_name = "/disk1/ykaiser/sharing/Lucas/bg_2000.root"
-    # signal_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg_2000.root")
-    signal_file_name = "/disk1/ykaiser/sharing/Lucas/bg.root"
-    signal_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg.root")
+    # signal_file_name = "/disk1/ykaiser/sharing/Lucas/bg_5000.root"
+    signal_file_name = "/disk1/ykaiser/sharing/Lucas/bg_sphaleron_005_inc.root"
+    signal_file = ROOT.TFile.Open(signal_file_name)
 
     signal_names = [key.GetName() for key in signal_file.GetListOfKeys()]
-    mc_names = [key.GetName() for key in mc_root_file.GetListOfKeys()]
+    # mc_names = [key.GetName() for key in mc_root_file.GetListOfKeys()]
+    mc_names = get_event_classes(mc_root_file_name)
 
-    i = 0
     # Checking allready included
     for mc_name in mc_names:
         if not mc_name in signal_names:
-
-            err_msg = "Class %s only in mc file but missing in signal file" % mc_name
-            logger.error(err_msg)
-            err_msg = "Maybe you forgot to merge background and signal "
-            err_msg += "or merged with --filter option ?"
-            logger.error(err_msg)
+            err_msg = f"Class {mc_name} only in mc file but missing in signal file."
             raise RuntimeError(err_msg)
-        if i == 10:
-            break
-        i = i + 1
-    i = 0
 
     ################################
     ################################
@@ -488,7 +483,8 @@ def main():
     #     "Rec_1Ele_2Muon",
     # ]
 
-    mc_names = list(event_classes.keys())
+    # mc_names = list(event_classes.keys())
+    # mc_names = get_event_classes(mc_root_file_name)
 
     # mc_names = ["Rec_1Muon_1MET"]
     ################################
@@ -498,7 +494,6 @@ def main():
     mc_root_file.Close()
     signal_file.Close()
 
-    start = time.monotonic()
     inputs_signal = []
     inputs_background = []
     # mc_names = ["Rec_2Ele_1bJet_1MET"]
@@ -509,12 +504,8 @@ def main():
         inputs_signal.append(
             (ec_name, n_rounds, mc_root_file_name, signal_file_name, True)
         )
-        if i == 10:
-            # break
-            pass
-        i = i + 1
 
-    print("\n\n--> Starting ...")
+    print("\n\n--> Launching scan jobs ...")
 
     all_inputs = inputs_background + inputs_signal
     progress_map(

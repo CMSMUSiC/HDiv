@@ -120,7 +120,7 @@ def command_line_options():
             scan_parser_group.add_argument("--forced-signal-scan-hash-{}-{}".format(class_type, distribution),
                 help="Use a fixed signal scan hash for {} {} scans".format(class_type, distribution))
     scan_parser_group.add_argument("--allow-hash-ambigouty", action="store_true",
-        help="Allow several matching hashes for one requsted scan_id (campaign_id)."\
+        help="Allow several matching hashes for one requested scan_id (campaign_id)."\
              "This is expected to happen if you want to combine scans from different states of the" \
              "MUSiC repositories")
 

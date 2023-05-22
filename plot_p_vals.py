@@ -116,6 +116,7 @@ ax_histy.tick_params(axis="y", labelleft=False)
 # cmap='Blues'
 # sct_plot = ax.scatter(p,p_js,alpha = 0.4, s=100, c=sig_fractions, cmap=cmap, edgecolor = None)
 sct_plot = ax.scatter(p, p_js, alpha=0.3, s=100, c=sig_fractions, edgecolor=None)
+# sct_plot = ax.scatter(p, p_js, alpha=0.3, s=100, c="blue", edgecolor=None)
 
 ax_histx.hist(p, bins=30, color="tab:cyan")
 ax_histy.hist(p_js, bins=30, orientation="horizontal", color="tab:cyan")
@@ -136,7 +137,6 @@ os.system("rm -rf Music_alt_comparison*")
 
 plt.savefig("Music_alt_comparison.png")
 plt.savefig("Music_alt_comparison.pdf")
-
 
 ax.set_yscale("log")
 ax.set_xscale("log")

@@ -397,6 +397,7 @@ class TEventClass : public TNamed
         }
         return outvec;
     }
+
     double getDistTypeMin(std::string distType) const
     {
 
@@ -743,8 +744,10 @@ class TEventClass : public TNamed
     // following maps are not neccessarily only for this class
     // number of analyzed events, not weigthed at all
     std::map<std::string, unsigned int> eventCount;
+
     // sum of event weights, weighted to lumi and cross section
     std::map<std::string, double> totalEvents;
+
     // sum of event weights, not weighted
     std::map<std::string, double> totalEventsUnweighted;
 
@@ -752,6 +755,7 @@ class TEventClass : public TNamed
     // per process. Each map contains a map with one hist per distType
     // e.g. allProcHistoMap[process][distType]
     std::map<std::string, std::map<std::string, TH1F *>> allProcHistoMap;
+
     // A copy of the original allProcHistoMap with unweighted events.
     std::map<std::string, std::map<std::string, TH1F *>> allProcHistoMapUnweighted;
 
@@ -789,6 +793,7 @@ class TEventClass : public TNamed
     bool m_is_filled;
     // safety so hists are not saled twice
     bool m_scaledToXSec;
+
     // Generic implementations of getHistoPointer for different map types
     TH1F *getHistoPointer(const std::string &process,
                           const std::string distType,
