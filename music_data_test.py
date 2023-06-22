@@ -21,6 +21,9 @@ import matplotlib.pyplot as plt
 import mplhep as hep
 import subprocess
 
+
+#from event_classes import event_classes
+from puplication_eventclasses import  event_classes
 hep.style.use(hep.style.ROOT)
 mpl.use("Agg")
 
@@ -290,16 +293,17 @@ def calculation(
     #########################################
     #########################################
     #########################################
-    Kin_distribution = ["InvMass"]
+    #Kin_distribution = ["InvMass"]
     #########################################
     #########################################
     #########################################
 
     for distribution in Kin_distribution:
         distribution = str(distribution)
+        #print(distribution)
         # create shifts.json
         shifts_json = (
-            "Build_Stage2/JS_scannfiles/"
+            "/user/scratch/karwatzki/JS_scannfiles/"
             + distribution
             + "/shifts-"
             + ec_name
@@ -355,7 +359,7 @@ def calculation(
 
         # Comment out if not Data
         data_dir = (
-            "Build_Stage2/JS_integration/" + distribution + "/" + ec_name + "_bkg"
+            "/user/scratch/karwatzki/JS_integration/" + distribution + "/" + ec_name + "_bkg"
         )
         if IS_SIGNAL:
             signal_ec = ecroot.read_ec_object(signal_file, ec_name)
@@ -365,7 +369,7 @@ def calculation(
                 )
             )
             data_dir = (
-                "Build_Stage2/JS_integration/"
+                "/user/scratch/karwatzki/JS_integration/"
                 + distribution
                 + "/"
                 + ec_name
@@ -376,20 +380,20 @@ def calculation(
         d["FirstRound"] = 0
         d["NumRounds"] = n_rounds
         os.system(
-            "rm -rf Build_Stage2/JS_scannfiles/"
+            "rm -rf /user/scratch/karwatzki/JS_scannfiles/"
             + distribution
             + "/"
             + ec_name
             + ".json >> /dev/null"
         )
         with open(
-            "Build_Stage2/JS_scannfiles/" + distribution + "/" + ec_name + ".json", "w"
+            "/user/scratch/karwatzki/JS_scannfiles/" + distribution + "/" + ec_name + ".json", "w"
         ) as jf:
             json.dump(d, jf, indent=2)
         # subprocess.run() capture output = true / Turorial REAL python subproces.
         os.system(f"mkdir " + data_dir)
         command = (
-            "scanClass  --lut bin/lookuptable.bin -j Build_Stage2/JS_scannfiles/"
+            "scanClass  --lut bin/lookuptable.bin -j/user/scratch/karwatzki/JS_scannfiles/"
             + distribution
             + "/"
             + ec_name
@@ -401,6 +405,43 @@ def calculation(
             + data_dir
         )
         subprocess.run([command], shell=True, capture_output=True)
+        os.system(
+            "rm -rf /user/scratch/karwatzki/JS_scannfiles/"
+            + distribution
+            + "/"
+            +"shifts-"
+            + ec_name
+            + ".json >> /dev/null"
+        )
+        os.system(
+            "rm -rf /user/scratch/karwatzki/JS_scannfiles/"
+            + distribution
+            + "/"
+            + ec_name
+            + ".json >> /dev/null"
+        )
+        os.system(
+            "rm -rf /user/scratch/karwatzki/JS_integration/"
+            + distribution
+            + "/"
+            + ec_name
+            +"_bkg/"
+            + ec_name
+            + "_"
+            +distribution
+            + "_info.json >> /dev/null"
+        )
+        os.system(
+            "rm -rf /user/scratch/karwatzki/JS_integration/"
+            + distribution
+            + "/"
+            + ec_name
+            +"_signal/"
+            + ec_name
+            + "_"
+            +distribution
+            + "_info.json >> /dev/null"
+        )
         # subprocess.run(["scanClass","--lut","bin/lookuptable.bin","-j","Build_Stage2/JS_scannfiles/",distribution,"/",ec_name,
         #                 ".json -s  ",shifts_json," -l 0 -n ",str(n_rounds)," -o ",data_dir])
         # print("DEBUG")
@@ -418,58 +459,38 @@ def calculation_star(args):
 def main():
     logger = logging.getLogger("main")
     roothelpers.root_setup()
-    os.system("rm -rf Build_Stage2/JS_scannfiles ; mkdir Build_Stage2/JS_scannfiles")
-    os.system("rm -rf Build_Stage2/JS_integration ; mkdir Build_Stage2/JS_integration")
+    os.system("rm -rf /user/scratch/karwatzki/JS_scannfiles ; mkdir /user/scratch/karwatzki/JS_scannfiles")
+    os.system("rm -rf /user/scratch/karwatzki/JS_integration ; mkdir /user/scratch/karwatzki/JS_integration")
 
-    os.system("mkdir Build_Stage2/JS_scannfiles/InvMass")
-    os.system("mkdir Build_Stage2/JS_integration/InvMass")
+    os.system("mkdir /user/scratch/karwatzki/JS_scannfiles/InvMass")
+    os.system("mkdir /user/scratch/karwatzki/JS_integration/InvMass")
 
-    os.system("mkdir Build_Stage2/JS_scannfiles/SumPt")
-    os.system("mkdir Build_Stage2/JS_integration/SumPt")
+    os.system("mkdir /user/scratch/karwatzki/JS_scannfiles/SumPt")
+    os.system("mkdir /user/scratch/karwatzki/JS_integration/SumPt")
 
-    n_rounds = 20  # Number of signal to Average
-    n_toys = 10  # Number of Toys
+    os.system("mkdir /user/scratch/karwatzki/JS_scannfiles/MET")
+    os.system("mkdir /user/scratch/karwatzki/JS_integration/MET")
 
-    # Open the ROOT file and loop over all objects
+    n_rounds = int(input("How many rounds do you want to Average the Singal over?: "))
+    n_toys = int(input("How many Toys do you want?: "))
+    number_of_cores = int(input("How many Cores do you want to use?: "))
+
+    
+    ################################
+    ################################
+    ################################
+    #Insert The Root File here
     mc_root_file_name = "/disk1/ykaiser/sharing/Lucas/bg.root"
-    mc_root_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg.root")
     signal_file_name = "/disk1/ykaiser/sharing/Lucas/bg_2000.root"
-    signal_file = ROOT.TFile.Open("/disk1/ykaiser/sharing/Lucas/bg_2000.root")
-
-    signal_names = [key.GetName() for key in signal_file.GetListOfKeys()]
-    mc_names = [key.GetName() for key in mc_root_file.GetListOfKeys()]
-
-    i = 0
-    # Checking allready included
-    for mc_name in mc_names:
-        if not mc_name in signal_names:
-
-            err_msg = "Class %s only in mc file but missing in signal file" % mc_name
-            logger.error(err_msg)
-            err_msg = "Maybe you forgot to merge background and signal "
-            err_msg += "or merged with --filter option ?"
-            logger.error(err_msg)
-            raise RuntimeError(err_msg)
-        if i == 10:
-            break
-        i = i + 1
-    i = 0
-
-    ################################
-    ################################
-    ################################
-    mc_names = ["Rec_1Ele_1MET+X"]
     ################################
     ################################
     ################################
 
-    mc_root_file.Close()
-    signal_file.Close()
-
-    start = time.monotonic()
     inputs_signal = []
     inputs_background = []
-    # mc_names = ["Rec_2Ele_1bJet_1MET"]
+
+    mc_names = event_classes
+
     for ec_name in mc_names:
         inputs_background.append(
             (ec_name, n_toys, mc_root_file_name, signal_file_name, False)
@@ -477,135 +498,129 @@ def main():
         inputs_signal.append(
             (ec_name, n_rounds, mc_root_file_name, signal_file_name, True)
         )
-        if i == 10:
-            break
-        i = i + 1
 
-    progress_map(
-        calculation_star,
-        inputs_background,
-        initargs=(100,),
-        n_cpu=105,
-        error_behavior="coerce",
-        #                         set_error_value=("nan","nan"),
-    )
-    progress_map(
-        calculation_star,
-        inputs_signal,
-        initargs=(100,),
-        n_cpu=105,
-        error_behavior="coerce",
-        #                         set_error_value=("nan","nan"),
-    )
 
-    P_music = {}
-    JS = {}
-    distributions = ["InvMass", "SumPt"]
-    i = 0
-    for ec_name in mc_names:
-        for dist in distributions:
-            print("----     " + dist + "    ----")
-            path_signal = (
-                "Build_Stage2/JS_integration/"
-                + dist
-                + "/"
-                + ec_name
-                + "_signal/"
-                + ec_name
-                + "_"
-                + dist
-                + "_output.csv"
-            )
-            path_bkg = (
-                "Build_Stage2/JS_integration/"
-                + dist
-                + "/"
-                + ec_name
-                + "_bkg/"
-                + ec_name
-                + "_"
-                + dist
-                + "_output.csv"
-            )
-            if os.path.isfile(path_signal):
-                if os.path.isfile(path_bkg):
-                    p_signal = np.mean(np.array(read_outputs(path_signal)))
-                    p_signal_js = np.mean(np.array(read_outputs_js(path_signal)))
+    all_inputs = inputs_background + inputs_signal
 
-                    p_toys = np.array(read_outputs(path_bkg))
-                    p_toys_js = np.array(read_outputs_js(path_bkg))
 
-                    print("Mean of P_signal / JS: ", p_signal_js)
-                    print("Mean of P_bkg / JS: ", np.mean(p_toys_js))
+    for i in range(50):
+        progress_map(
+            calculation_star,
+            all_inputs[i*300:(i+1)*300],
+            initargs=(number_of_cores),
+            n_cpu=min(number_of_cores, len(all_inputs)),
+            error_behavior="coerce",
+        )
 
-                    result = max(
-                        1 / float(p_toys.shape[0]),
-                        float(np.sum(p_toys <= p_signal) / float(p_toys.shape[0])),
-                    )
-                    result_js = max(
-                        1 / float(p_toys_js.shape[0]),
-                        float(
-                            np.sum(np.array(p_toys_js) >= p_signal_js) / len(p_toys_js)
-                        ),
-                    )
-                    print(str(ec_name) + ", " + str(dist) + ", MUSiC: " + str(result))
-                    print(str(ec_name) + ", " + str(dist) + ", JS: " + str(result_js))
 
-                    plt.figure()
-                    counts, bins = np.histogram(
-                        np.array(read_outputs_js(path_signal)), bins=50, range=(0, 1)
-                    )
-                    plt.hist(bins[:-1], bins, weights=counts)
-                    plt.vlines(
-                        p_signal_js, 0, max(counts), color="red", ls=":", linewidth=4.0
-                    )
-                    plt.legend(["Mean-Signal-JSD", "Signal-JSD"])
-                    plt.xlabel("JSD")
-                    plt.ylabel("Number of Events")
-                    plt.savefig("DEBUG/" + dist + "_" + ec_name + "js_signal.jpg")
-                    plt.show()
 
-                    plt.figure()
-                    counts, bins = np.histogram(p_toys_js, bins=50, range=(0, 1))
-                    plt.hist(bins[:-1], bins, weights=counts)
-                    plt.vlines(
-                        p_signal_js, 0, max(counts), color="red", ls=":", linewidth=4.0
-                    )
-                    plt.xlabel("JSD")
-                    plt.ylabel("Number of Events")
-                    plt.legend(["Mean-Signal-JSD", "toy-JSD"])
-                    plt.savefig("DEBUG/" + dist + "_" + ec_name + "js_toys.jpg")
-                    plt.show()
+    # For Additional Plots / Debugging set True
+    if(False):
+        P_music = {}
+        JS = {}
+        distributions = ["InvMass", "SumPt","MET"]
+        for ec_name in mc_names:
+            for dist in distributions:
+                print("----     " + dist + "    ----")
+                path_signal = (
+                    "/user/scratch/karwatzki/JS_integration/"
+                    + dist
+                    + "/"
+                    + ec_name
+                    + "_signal/"
+                    + ec_name
+                    + "_"
+                    + dist
+                    + "_output.csv"
+                )
+                path_bkg = (
+                    "/user/scratch/karwatzki/JS_integration/"
+                    + dist
+                    + "/"
+                    + ec_name
+                    + "_bkg/"
+                    + ec_name
+                    + "_"
+                    + dist
+                    + "_output.csv"
+                )
+                if os.path.isfile(path_signal):
+                    if os.path.isfile(path_bkg):
+                        p_signal = np.mean(np.array(read_outputs(path_signal)))
+                        p_signal_js = np.mean(np.array(read_outputs_js(path_signal)))
 
-                    plt.figure()
-                    counts, bins = np.histogram(
-                        np.array(read_outputs(path_signal)), bins=50, range=(0, 0.05)
-                    )
-                    plt.hist(bins[:-1], bins, weights=counts)
-                    plt.vlines(
-                        p_signal, 0, max(counts), color="red", ls=":", linewidth=4.0
-                    )
-                    plt.legend(["Mean-Signal-MUSiC", "Signal-MUSiC"])
-                    plt.xlabel("MUSiC-P-Value")
-                    plt.ylabel("Number of Events")
-                    plt.savefig("DEBUG/" + dist + "_" + ec_name + "MUSiC_signal.jpg")
-                    plt.show()
+                        p_toys = np.array(read_outputs(path_bkg))
+                        p_toys_js = np.array(read_outputs_js(path_bkg))
 
-                    plt.figure()
-                    counts, bins = np.histogram(p_toys, bins=50, range=(0, 0.05))
-                    plt.hist(bins[:-1], bins, weights=counts)
-                    plt.vlines(
-                        p_signal, 0, max(counts), color="red", ls=":", linewidth=4.0
-                    )
-                    plt.xlabel("MUSiC-P-Value")
-                    plt.ylabel("Number of Events")
-                    plt.legend(["Mean-Signal-MUSiC", "toy-MUSiC"])
-                    plt.savefig("DEBUG/" + dist + "_" + ec_name + "MUSiC_toys.jpg")
-                    plt.show()
+                        print("Mean of P_signal / JS: ", p_signal_js)
+                        print("Mean of P_bkg / JS: ", np.mean(p_toys_js))
 
-        if i == 10:
-            break
-        i = i + 1
+                        result = max(
+                            1 / float(p_toys.shape[0]),
+                            float(np.sum(p_toys <= p_signal) / float(p_toys.shape[0])),
+                        )
+                        result_js = max(
+                            1 / float(p_toys_js.shape[0]),
+                            float(
+                                np.sum(np.array(p_toys_js) >= p_signal_js) / len(p_toys_js)
+                            ),
+                        )
+                        print(str(ec_name) + ", " + str(dist) + ", MUSiC: " + str(result))
+                        print(str(ec_name) + ", " + str(dist) + ", JS: " + str(result_js))
+
+                        plt.figure()
+                        counts, bins = np.histogram(
+                            np.array(read_outputs_js(path_signal)), bins=50, range=(0, 1)
+                        )
+                        plt.hist(bins[:-1], bins, weights=counts)
+                        plt.vlines(
+                            p_signal_js, 0, max(counts), color="red", ls=":", linewidth=4.0
+                        )
+                        plt.legend(["Mean-Signal-JSD", "Signal-JSD"])
+                        plt.xlabel("JSD")
+                        plt.ylabel("Number of Events")
+                        plt.savefig("DEBUG/" + dist + "_" + ec_name + "js_signal.jpg")
+                        plt.show()
+
+                        plt.figure()
+                        xmax = np.max(np.array(p_toys_js))
+                        counts, bins = np.histogram(p_toys_js, bins=50, range=(0, xmax))
+                        plt.hist(bins[:-1], bins, weights=counts)
+                        plt.vlines(
+                            p_signal_js, 0, max(counts), color="red", ls=":", linewidth=4.0
+                        )
+                        plt.xlabel("JSD")
+                        plt.ylabel("Number of Events")
+                        plt.legend(["Mean-Signal-JSD", "toy-JSD"])
+                        plt.savefig("DEBUG/" + dist + "_" + ec_name + "js_toys.jpg")
+                        plt.show()
+
+                        plt.figure()
+                        xmax = np.max(np.array(read_outputs(path_signal)))
+                        counts, bins = np.histogram(
+                            np.array(read_outputs(path_signal)), bins=50, range=(0, 0.05)
+                        )
+                        plt.hist(bins[:-1], bins, weights=counts)
+                        plt.vlines(
+                            p_signal, 0, max(counts), color="red", ls=":", linewidth=4.0
+                        )
+                        plt.legend(["Mean-Signal-MUSiC", "Signal-MUSiC"])
+                        plt.xlabel("MUSiC-P-Value")
+                        plt.ylabel("Number of Events")
+                        plt.savefig("DEBUG/" + dist + "_" + ec_name + "MUSiC_signal.jpg")
+                        plt.show()
+
+                        plt.figure()
+                        counts, bins = np.histogram(p_toys, bins=50, range=(0, 0.05))
+                        plt.hist(bins[:-1], bins, weights=counts)
+                        plt.vlines(
+                            p_signal, 0, max(counts), color="red", ls=":", linewidth=4.0
+                        )
+                        plt.xlabel("MUSiC-P-Value")
+                        plt.ylabel("Number of Events")
+                        plt.legend(["Mean-Signal-MUSiC", "toy-MUSiC"])
+                        plt.savefig("DEBUG/" + dist + "_" + ec_name + "MUSiC_toys.jpg")
+                        plt.show()
 
 
 if __name__ == "__main__":

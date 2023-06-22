@@ -27,7 +27,7 @@ js_results = {}
 
 
 exp_mean = 10
-signal_mean = 53
+signal_mean = 35
 signal_std = 1    
 
 

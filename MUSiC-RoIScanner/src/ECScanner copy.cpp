@@ -347,6 +347,59 @@ auto ECScanner::kl_div(const std::vector<double> &P, const std::vector<double> &
     return res;
 }
 
+auto ECScanner::shannon_entropy(std::vector<double> &P) -> double
+{
+    double entropy = 0;
+    for (std::size_t i = 0; i < P.size(); i++)
+    {
+        entropy += -P[i] * log2(P[i]);
+    }
+    return entropy;
+}          
+
+auto ECScanner::Phi(double theta, double lambda) -> double
+{
+    double s = 10;
+    return std::pow((std::pow(theta,s)+std::pow(lambda,s))/2,1/s)
+}
+
+
+
+auto ECScanner::get_h_divergency(std::vector<double> &data,
+                                std::vector<double> &ref_model,
+                                std::vector<int> &relevant_bins) -> double
+{
+    std::vector<double> data_norm(data.size(), 0);
+    std::vector<double> ref_model_norm(data.size(), 0);
+    std::vector<double> M(data.size(), 0);
+    // DEBUG LUCAS
+    for (std::size_t i = 0; i < data.size(); i++)
+    {
+        if (data[i] < 0)
+        {
+            data[i] = 0;
+        }
+        if (ref_model[i] < 0)
+        {
+            ref_model[i] = 0;
+        }
+    }
+
+
+    data_norm = normalize(data);
+    ref_model_norm = normalize(ref_model);
+
+    for (std::size_t i = 0; i < data.size(); i++)
+    {
+        M[i] = 0.5 * (data_norm[i] + ref_model_norm[i]);
+    }
+
+    return Phi(shannon_entropy(M)-shannon_entropy(ref_model_norm),  shannon_entropy(M)-shannon_entropy(data_norm));
+
+}                                
+
+
+
 auto ECScanner::get_js_distance(std::vector<double> &data,
                                 std::vector<double> &ref_model,
                                 std::vector<int> &relevant_bins) -> double
@@ -408,7 +461,7 @@ void ECScanner::findJSDistance()
         }
     }
 
-    if (ref_model_histogram.size() < 6)
+    if (ref_model_histogram.size() < 10)
     {
         m_scanResults.at(m_scanResults.size() - 1).add_js_distance(0);
     }

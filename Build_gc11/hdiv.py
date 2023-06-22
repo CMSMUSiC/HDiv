@@ -38,7 +38,7 @@ def single_test_hdiv(total_data, signal_size, ref_model: Model, data_model: Mode
 
     
     plt.plot(x,exp_theo,color="lightgreen",label="PDF",linewidth=3)
-    plt.plot(x,exp_theo-test_theo,color="red",label="PDF with injected Signal",ls = ":",linewidth=3)
+    plt.plot(x,exp_theo + test_theo,color="red",label="PDF with injected Signal",ls = ":",linewidth=3)
     ax.legend()
     ax.set_yscale("log")
     ax.set_ylabel("Counts \ (2x)",horizontalalignment='center')

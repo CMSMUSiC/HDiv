@@ -29,7 +29,7 @@ from music import single_test_music, get_music_pvalue
 
 #Defining Global Parameters
 exp_mean = 10
-signal_mean = 53
+signal_mean = 35
 signal_std = 1    
 
 

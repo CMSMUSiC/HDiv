@@ -204,62 +204,68 @@ def main():
 
     inputs_signal = []
     inputs_background = []
-    mc_name = "Rec_1Ele+X"
+    mc_name = "Rec_1Ele_2bJet_2Jet_1MET+NJets"
     ec_name = mc_name
     inputs_signal.append((ec_name, n_rounds, mc_root_file_name, signal_file_name, True))
     inputs_background.append(
         (ec_name, n_toys, mc_root_file_name, signal_file_name, False)
     )
 
-    distribution = "SumPt"
 
-    minRegionWidth = 1
+    distributions = ["InvMass","MET","SumPt"]
+    for distribution in distributions:
 
-    # First data:
+        minRegionWidth = 1
 
-    # if(not IS_SIGNAL):
-    #    systematics = collect_systematics([ec_name], mc_root_file, signal_file=None)
+        # First data:
 
-    mc_ec = ecroot.read_ec_object(mc_root_file, ec_name)
-    signal_ec = ecroot.read_ec_object(signal_file, ec_name)
+        # if(not IS_SIGNAL):
+        #    systematics = collect_systematics([ec_name], mc_root_file, signal_file=None)
 
-    MCBINS = _flatten(
-        _extract_mc_bins(
-            mc_ec, distribution=distribution, filter_systematics=None, scan_key=""
+        mc_ec = ecroot.read_ec_object(mc_root_file, ec_name)
+        signal_ec = ecroot.read_ec_object(signal_file, ec_name)
+
+        MCBINS = _flatten(
+            _extract_mc_bins(
+                mc_ec, distribution=distribution, filter_systematics=None, scan_key=""
+            )
         )
-    )
 
-    SignalBins = _flatten(
-        _extract_mc_bins(signal_ec, distribution, filter_systematics=None, scan_key="")
-    )
+        SignalBins = _flatten(
+            _extract_mc_bins(signal_ec, distribution, filter_systematics=None, scan_key="")
+        )
 
-    bins = []
-    Values = []
-    for i in range(len(MCBINS)):
-        bins.append(MCBINS[i]["lowerEdge"])
-        Values.append(MCBINS[i]["mcEventsPerProcessGroup"])
+        bins = []
+        Values = []
+        for i in range(len(MCBINS)):
+            bins.append(MCBINS[i]["lowerEdge"])
+            Values.append(MCBINS[i]["mcEventsPerProcessGroup"])
 
-    bins.append(bins[-1] + MCBINS[-1]["width"])
-    plt.hist(bins[:-1], bins, weights=Values, alpha=0.5)
-    print(bins)
-    print(Values)
-    plt.ylim(0.01, np.max(np.array(Values) * 1.3))
-    bins_data = []
-    Values = []
-    for i in range(len(SignalBins)):
-        bins_data.append(bins[i] + 0.5 * MCBINS[i]["width"])
-        Values.append(SignalBins[i]["mcEventsPerProcessGroup"])
+        bins.append(bins[-1] + MCBINS[-1]["width"])
+        print(bins)
+        print(Values)
+        plt.ylim(0.01, np.max(np.array(Values) * 1.3))
+        bins_data = []
+        Values_data = []
+        for i in range(len(SignalBins)):
+            if(SignalBins[i]["mcEventsPerProcessGroup"] != 0):
+                bins_data.append(bins[i] + 0.5 * MCBINS[i]["width"])
+                Values_data.append(SignalBins[i]["mcEventsPerProcessGroup"])
 
-    plt.scatter(bins_data, Values, color="black", s=6)
-    plt.xlim(1, 100)
+        plt.figure()
+        plt.hist(bins[:-1], bins, weights=Values, alpha=0.5)
+        plt.scatter(bins_data, Values_data, color="black", s=6)
+        plt.title("dist: "+distribution + r" $Counts_{bkg}$: " + str(np.round(np.sum(Values),2)) +r" $Counts_{sig}$: " + str(np.round(np.sum(Values_data),2)) )
 
-    plt.yscale("log")
-    # plt.xscale("lin")
-    plt.xlabel("Energy [GEV]")
-    plt.ylabel("Number of Events")
-    plt.legend(["Signal", "Background"])
-    plt.savefig("DEBUG/" + ec_name + "_distibution.png")
-    print(Values)
+        plt.xlim(bins_data[0]*0.9,bins_data[-1]*1.1)
+        plt.yscale("log")
+        plt.xscale("linear")
+        plt.xlabel("Energy [GEV]")
+        plt.ylabel("Number of Events")
+        plt.legend(["Signal", "Background"])
+        plt.savefig("DEBUG/" + ec_name + "_"+distribution +"_distibution.png")
+        plt.show()
+        print(Values)
 
 
 if __name__ == "__main__":
