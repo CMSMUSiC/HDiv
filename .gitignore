@@ -17,7 +17,6 @@ DEBUG/
 Build_Stage2/JS_scannfiles
 Build_Stage2/DEBUG
 Build_Stage2/.cccp
-Build_Stage2/.cpp
 Build_Stage2/task.tar.gz
 Build_gc11/shifts.json
 Build_gc11/test_outputs
