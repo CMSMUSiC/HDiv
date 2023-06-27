@@ -182,25 +182,25 @@ def Boxplot_New(Eventclass,distribution="InvMass"):
     plt.yscale("log")
 
 
-    offset = 0.4
+    offset = 0.15
     binwitdh = 0.6
     for i in range(len(results_JS)):
-        rect = patches.Rectangle((np.arange(1, (len(results_JS) )*2,2)[i] -offset - binwitdh/2  + binwitdh/4, MUSiC_Median[i] - MUSiC_err_2sig[i]), binwitdh*.5,  MUSiC_err_2sig[i] - MUSiC_err_1sig[i], linewidth=1, edgecolor='cyan', facecolor='cyan', alpha=0.8,label = r"SM expectation ± 2 $\sigma$")
+        rect = patches.Rectangle((np.arange(1, (len(results_JS) )*2,2)[i] -offset - binwitdh  + binwitdh/4, MUSiC_Median[i] - MUSiC_err_2sig[i]), binwitdh*.5,  MUSiC_err_2sig[i] - MUSiC_err_1sig[i], linewidth=1, edgecolor='cyan', facecolor='cyan', alpha=0.8,label = r"SM expectation ± 2 $\sigma$")
         plt.gca().add_patch(rect)
-        rect = patches.Rectangle((np.arange(1, (len(results_JS) )*2,2)[i] -offset - binwitdh/2 + binwitdh/4, MUSiC_Median[i] + MUSiC_err_1sig[i]), binwitdh*.5,  MUSiC_err_2sig[i] - MUSiC_err_1sig[i], linewidth=1, edgecolor='cyan', facecolor='cyan', alpha=0.8,label = r"SM expectation ± 2 $\sigma$")
+        rect = patches.Rectangle((np.arange(1, (len(results_JS) )*2,2)[i] -offset - binwitdh  + binwitdh/4, MUSiC_Median[i] + MUSiC_err_1sig[i]), binwitdh*.5,  MUSiC_err_2sig[i] - MUSiC_err_1sig[i], linewidth=1, edgecolor='cyan', facecolor='cyan', alpha=0.8,label = r"SM expectation ± 2 $\sigma$")
         plt.gca().add_patch(rect)
-        rect = patches.Rectangle((np.arange(1, (len(results_JS) )*2,2)[i] -offset - binwitdh/2 , MUSiC_Median[i] - MUSiC_err_1sig[i]), binwitdh, 2 * MUSiC_err_1sig[i], linewidth=1, edgecolor='Blue', facecolor='Blue', alpha=0.3,label = r"SM expectation ± 1 $\sigma$")
+        rect = patches.Rectangle((np.arange(1, (len(results_JS) )*2,2)[i] -offset - binwitdh , MUSiC_Median[i] - MUSiC_err_1sig[i]), binwitdh, 2 * MUSiC_err_1sig[i], linewidth=1, edgecolor='Blue', facecolor='Blue', alpha=0.3,label = r"SM expectation ± 1 $\sigma$")
         plt.gca().add_patch(rect)     
 
 
-    plt.errorbar(np.arange(1, (len(results_JS) )*2,2) -offset+binwitdh/2 , MUSiC_Median,xerr = binwitdh/2+0.1, fmt='+', markersize=0,linewidth = 1, capsize=0, color='orange')
+    plt.errorbar(np.arange(1, (len(results_JS) )*2,2) -offset - binwitdh +binwitdh/2 , MUSiC_Median,xerr = binwitdh/2+0.05, fmt='+', markersize=0,linewidth = 1, capsize=0, color='orange')
 
     for i in range(len(results_JS)):
-        rect = patches.Rectangle((np.arange(1, (len(results_JS) )*2,2)[i] + offset + binwitdh/2 + binwitdh/4, JS_Median[i] - JS_err_2sig[i]), binwitdh*.5, (JS_err_2sig[i] - JS_err_1sig[i])  , linewidth=1, edgecolor='springgreen', facecolor='springgreen', alpha=0.8,label = r"SM expectation ± 2 $\sigma$")
+        rect = patches.Rectangle((np.arange(1, (len(results_JS) )*2,2)[i] + offset + binwitdh/4, JS_Median[i] - JS_err_2sig[i]), binwitdh*.5, (JS_err_2sig[i] - JS_err_1sig[i])  , linewidth=1, edgecolor='springgreen', facecolor='springgreen', alpha=0.8,label = r"SM expectation ± 2 $\sigma$")
         plt.gca().add_patch(rect)
-        rect = patches.Rectangle((np.arange(1, (len(results_JS) )*2,2)[i] + offset + binwitdh/2 + binwitdh/4, JS_Median[i] + JS_err_1sig[i]), binwitdh*.5,(JS_err_2sig[i] - JS_err_1sig[i]) , linewidth=1, edgecolor='springgreen', facecolor='springgreen', alpha=0.8,label = r"SM expectation ± 2 $\sigma$")
+        rect = patches.Rectangle((np.arange(1, (len(results_JS) )*2,2)[i] + offset  + binwitdh/4, JS_Median[i] + JS_err_1sig[i]), binwitdh*.5,(JS_err_2sig[i] - JS_err_1sig[i]) , linewidth=1, edgecolor='springgreen', facecolor='springgreen', alpha=0.8,label = r"SM expectation ± 2 $\sigma$")
         plt.gca().add_patch(rect)
-        rect = patches.Rectangle((np.arange(1, (len(results_JS) )*2,2)[i] + offset + binwitdh/2, JS_Median[i] - JS_err_1sig[i]), binwitdh, 2 * JS_err_1sig[i], linewidth=1, edgecolor='green', facecolor='green', alpha=0.4,label = r"SM expectation ± 1 $\sigma$")
+        rect = patches.Rectangle((np.arange(1, (len(results_JS) )*2,2)[i] + offset , JS_Median[i] - JS_err_1sig[i]), binwitdh, 2 * JS_err_1sig[i], linewidth=1, edgecolor='green', facecolor='green', alpha=0.4,label = r"SM expectation ± 1 $\sigma$")
         plt.gca().add_patch(rect)
 
     plt.errorbar(np.arange(1, (len(results_JS))*2,2) + offset+binwitdh/2, JS_Median,xerr = binwitdh/2+0.1, fmt='+', markersize=0,linewidth = 1, capsize=0, color='purple')
@@ -208,7 +208,7 @@ def Boxplot_New(Eventclass,distribution="InvMass"):
 
 
     plt.yscale("log")
-    plt.xlim(-0.09)
+    plt.xlim(-0.09,np.max((np.arange(1, (len(results_JS) )*2,2)))+1 )
     plt.ylim(1/2200,1.09)
     plt.title("Music - " + str(dist))
     plt.ylabel("Number of Eventclasses")
