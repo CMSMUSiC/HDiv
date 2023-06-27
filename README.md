@@ -37,3 +37,7 @@ This is the main plotting script.
 This is the function you call to get the specified classes. This script calls
 get event classes.py, where you can specify which classes are selected. The
 classes are further sorted by occupancy
+
+## Creation of Json files
+For example in *music.py* in line 30 - 69  and 86 f.
+Or music_da_test.py l 329f. 
